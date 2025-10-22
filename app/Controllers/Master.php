@@ -314,44 +314,21 @@ class Master extends BaseController
 	public function show_members() {
 
 		echo view('template/header_master');
-        $dateColumn  = 'cur_year';            // <-- change to your actual DATE/DATETIME column
-        $tz          = 'America/Los_Angeles';   // your TZ
+   
+		// --- read sort parameters from URL query (e.g., ?sort=first_name&dir=DESC)
+        $sort = $this->request->getGet('sort') ?? 'id_members';
+        $dir  = strtoupper($this->request->getGet('dir') ?? 'ASC');
+        $dir  = in_array($dir, ['ASC', 'DESC']) ? $dir : 'ASC';
 
-        $now   = new \DateTime('now');
-        $year  = (int)$now->format('Y');
-        $month = (int)$now->format('n');
-
-        $start = new \DateTime("$year-01-01 00:00:00");
-
-        if ($month >= 10) {
-            // October–December → include current + next year
-            $end = new \DateTime(($year + 2) . "-01-01 00:00:00");
-        } else {
-            // Otherwise only current year
-            $end = new \DateTime(($year + 1) . "-01-01 00:00:00");
-        }
-
-		$allowedSorts = ['m.lname', 'm.callsign', 'm.email'];
-        $sort = $this->request->getGet('sort');
-        $dir  = $this->request->getGet('dir');
-
-		// Validate and sanitize sort inputs
-        if (!in_array($sort, $allowedSorts)) {
-            $sort = 'm.lname'; // default
-        }
-        if ($dir !== 'desc') {
-            $dir = 'asc'; // default direction
-        }
-
-		$perPage = 15;
-		$group = 'members';
-
-		$records = $this->mems_mod->getList($perPage, $group);
-
-		$data = ['records' => $records, 'pager' => $this->mems_mod->pager, 'sort' => $sort, 'dir' => $dir,];
-
+        $data = [
+            'members' => $this->mems_mod->getList(20, $sort, $dir),
+            'pager'   => $this->mems_mod->pager,
+            'sort'    => $sort,
+            'dir'     => $dir,
+        ];
 
 		echo view('master/members_view', $data);
+
 		echo view('template/footer');
 	}
 }
