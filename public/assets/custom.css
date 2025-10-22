@@ -1,0 +1,26 @@
+.my-pager a,
+.my-pager span {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  margin-right: 0.25rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  color: #000 !important;
+}
+.my-pager .active,
+.my-pager .active a,
+.my-pager li.active a {
+  font-weight: 600;
+  border-color: #adb5bd;
+  color: #000 !important;
+}
+.my-pager ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.my-pager li {
+  display: inline-block;
+  margin-right: 0.25rem;
+}
