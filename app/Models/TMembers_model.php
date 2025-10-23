@@ -9,7 +9,7 @@ class TMembers_model extends Model {
     protected $returnType    = 'array';
     protected $allowedFields = [];
 
-    public function getList(int $perPage = 20, string $sort = 'id_member', string $dir = 'ASC') {
+    public function getList(int $perPage = 20, string $sort = 'lname', string $dir = 'ASC') {
 
         // Determine which cur_year(s) are “in season”
         $now   = Time::now('America/Los_Angeles'); // set your local TZ

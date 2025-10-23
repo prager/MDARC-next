@@ -1,32 +1,25 @@
-<div class="modal fade" id="editMem<?php echo $row['id']; ?>" tabindex="-1" aria-labelledby="editMemLabel" aria-hidden="true">
+<div class="modal fade" id="editMem<?= esc($m['id_members']) ?>" tabindex="-1" aria-labelledby="editMemLabel<?= esc($m['id_members']) ?>" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editMemLabel"><?= esc($row['lname']. ', ' .$row['fname'] . $row['callsign'] . ' / ' . $row['id_member'] ) ?></h5>
+        <h5 class="modal-title" id="editMemLabel<?= esc($m['id_members']) ?>"><?= esc($m['fname'] ?? '') . ' ' .  esc($m['lname'] ?? '') . ' ' .  esc($m['callsign'] ?? '') ?></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form action="<?php echo base_url() . '/index.php/edit-mem/'. $row['id']; ?>" method="post">
       <div class="modal-body">
       <section class="px-2">
         <div class="row">
-          <div class="col-lg">
-            <?php if($row['id_mem_types'] == 3 || $row['id_mem_types'] == 4) { ?>
-            <br><p>Family member of: <a href="<?php echo base_url() . '/index.php/res-mem/' . $row['id_parent'];?>" class="text-decoration-none"><?php echo $row['parent_fname'] . $mem['parent_lname']; ?></a> / Member Id: <?php echo $mem['id_parent']; ?></p>
-            <?php }?>
-          </div>
-        </div>
-        <div class="row">
           <div class="col-lg py-2">
             <label for="fname">First Name</label>
-            <input type="text" class="form-control" id="fname" name="fname" value="<?php echo $mem['fname']; ?>">
+            <input type="text" class="form-control" id="fname" name="fname" value="<?= esc($m['fname'] ?? '') ?>">
           </div>
           <div class="col-lg py-2">
               <label for="lname">Last Name</label>
-              <input type="text" class="form-control" id="lname" name="lname" value="<?php echo $mem['lname']; ?>">
+              <input type="text" class="form-control" id="lname" name="lname" value="<?= esc($m['lname'] ?? '') ?>">
           </div>
           <div class="col-lg py-2">
               <label for="callsign">Callsign</label>
-              <input type="text" class="form-control" id="callsign" name="callsign" value="<?php echo $mem['callsign']; ?>">
+              <input type="text" class="form-control" id="callsign" name="callsign" value="<?= esc($m['callsign'] ?? '') ?>">
           </div>
         </div>
         <div class="row">
@@ -35,8 +28,8 @@
             <select class="form-select" name="sel_lic">
               <?php
                 foreach($lic as $license) {
-                  if($license == $mem['license']) { ?>
-                    <option value="<?php echo $mem['license']; ?>" selected><?php echo $mem['license']; ?></option>
+                  if($license == esc($m['license'])) { ?>
+                    <option value="<?= esc($m['license']) ?>" selected><?= esc($m['license']) ?></option>
               <?php    }
                   else { ?>
                     <option value="<?php echo $license; ?>"><?php echo $license; ?></option>

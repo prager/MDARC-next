@@ -320,11 +320,14 @@ class Master extends BaseController
         $dir  = strtoupper($this->request->getGet('dir') ?? 'ASC');
         $dir  = in_array($dir, ['ASC', 'DESC']) ? $dir : 'ASC';
 
+		$lic = array('SWL', 'Technician', 'General', 'Advanced', 'Amateur Extra');
+
         $data = [
             'members' => $this->mems_mod->getList(17, $sort, $dir),
             'pager'   => $this->mems_mod->pager,
             'sort'    => $sort,
             'dir'     => $dir,
+			'lic'	=> $lic,
         ];
 
 		echo view('master/members_view', $data);
