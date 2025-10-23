@@ -16,7 +16,7 @@
       crossorigin="anonymous"
     ></script>
 
-    <script>
+<script>
 (function() {
   const modalEl = document.getElementById('parentModal');
   let parentId = null;

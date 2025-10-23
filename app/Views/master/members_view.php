@@ -30,7 +30,7 @@
         ?>
           <th>
           <?= esc($label) ?>
-          <a href="<?= $link ?>" class="ms-1 text-decoration-none fs-3 fw-bold" style="color: black;"><?= $arrow ?: '↕' ?></a>   
+            <a href="<?= $link ?>" class="ms-1 text-decoration-none fs-4 fw-bold" style="color: black;"><?= $arrow ?: '↕' ?></a>   
           </th>
         <?php endforeach; ?>
       </tr>
@@ -40,29 +40,13 @@
       <?php foreach ($members as $m): ?>
         <tr>
           <td><?= esc($m['id_members']) ?></td>
-          <td><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#detailsModal"><?= esc($m['lname'] ?? '') . ', ' .  esc($m['fname'] ?? '') ?></a></td>
-          <td><?= esc($m['email'] ?? '') ?></td>
-          <td><?= esc($m['callsign'] ?? '') ?></td>
-          <td><?= esc($m['cur_year'] ?? '') ?></td>
-          <td>
-          <?php if (!empty($m['parent_primary'])): ?>
-              <a href="#"
-                 class="parent-link text-decoration-none"
-                 data-id="<?= esc($m['parent_primary']) ?>"
-                 data-bs-toggle="modal"
-                 data-bs-target="#parentModal">
-                <?= esc($m['parent_primary']) ?>
-              </a>
-            <?php else: ?>
-              0
-            <?php endif; ?>
-          </td>
-          <!-- Modal -->
-          <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+          <td><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#detailsModal<?= esc($m['id_members']) ?>"><?= esc($m['lname'] ?? '') . ', ' .  esc($m['fname'] ?? '') ?></a>
+        <!-- Modal -->
+        <div class="modal fade" id="detailsModal<?= esc($m['id_members']) ?>" tabindex="-1" aria-labelledby="detailsModalLabel<?= esc($m['id_members']) ?>" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="detailsModalLabel">Primary Member ID: <?= esc($m['id_members']) ?></h1>
+                    <h1 class="modal-title fs-5" id="detailsModalLabel<?= esc($m['id_members']) ?>">Primary Member ID: <?= esc($m['id_members']) ?></h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -83,6 +67,25 @@
                 </div>
             </div>
           </div>
+        
+        </td>
+          <td><?= esc($m['email'] ?? '') ?></td>
+          <td><?= esc($m['callsign'] ?? '') ?></td>
+          <td><?= esc($m['cur_year'] ?? '') ?></td>
+          <td>
+          <?php if (!empty($m['parent_primary'])): ?>
+              <a href="#"
+                 class="parent-link text-decoration-none"
+                 data-id="<?= esc($m['parent_primary']) ?>"
+                 data-bs-toggle="modal"
+                 data-bs-target="#parentModal">
+                <?= esc($m['parent_primary']) ?>
+              </a>
+            <?php else: ?>
+              none
+            <?php endif; ?>
+          </td>
+          
         </tr>
       <?php endforeach; ?>
       </tbody>
@@ -104,12 +107,12 @@
             </div>
             <div class="modal-body">
                 <div id="parent-loading" class="text-muted">Loading…</div>
-                <dl class="row mb-0 d-none" id="parent-data">
-                <dt class="col-sm-4">ID</dt><dd class="col-sm-8" id="p-id"></dd>
-                <dt class="col-sm-4">First Name</dt><dd class="col-sm-8" id="p-fname"></dd>
-                <dt class="col-sm-4">Last Name</dt><dd class="col-sm-8" id="p-lname"></dd>
-                <dt class="col-sm-4">Email</dt><dd class="col-sm-8" id="p-email"></dd>
-                </dl>
+                    <dl class="row mb-0 d-none" id="parent-data">
+                        <dt class="col-sm-4">ID</dt><dd class="col-sm-8" id="p-id"></dd>
+                        <dt class="col-sm-4">First Name</dt><dd class="col-sm-8" id="p-fname"></dd>
+                        <dt class="col-sm-4">Last Name</dt><dd class="col-sm-8" id="p-lname"></dd>
+                        <dt class="col-sm-4">Email</dt><dd class="col-sm-8" id="p-email"></dd>
+                    </dl>
                 <div id="parent-error" class="alert alert-danger d-none"></div>
             </div>
             <div class="modal-footer">
