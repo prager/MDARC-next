@@ -29,3 +29,5 @@ $routes->get('unauthorize/(:num)', 'Master::authorize/$1');
 $routes->get('authorize/(:num)', 'Master::authorize/$1');
 $routes->get('add-mem', 'Master::add_mem');
 $routes->get('members', 'Master::show_members');
+
+$routes->get('members/parent/(:num)', 'Master::show_parent/$1'); // JSON endpoint

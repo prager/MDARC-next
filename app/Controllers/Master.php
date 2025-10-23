@@ -316,12 +316,12 @@ class Master extends BaseController
 		echo view('template/header_master');
    
 		// --- read sort parameters from URL query (e.g., ?sort=first_name&dir=DESC)
-        $sort = $this->request->getGet('sort') ?? 'id_members';
+        $sort = $this->request->getGet('sort') ?? 'lname';
         $dir  = strtoupper($this->request->getGet('dir') ?? 'ASC');
         $dir  = in_array($dir, ['ASC', 'DESC']) ? $dir : 'ASC';
 
         $data = [
-            'members' => $this->mems_mod->getList(20, $sort, $dir),
+            'members' => $this->mems_mod->getList(17, $sort, $dir),
             'pager'   => $this->mems_mod->pager,
             'sort'    => $sort,
             'dir'     => $dir,
@@ -330,5 +330,27 @@ class Master extends BaseController
 		echo view('master/members_view', $data);
 
 		echo view('template/footer');
+	}
+
+	public function show_parent(int $id) {
+		
+		$parent = $this->mems_mod->select('id_members, fname, lname, email')
+		->where('id_members', $id)
+		->first();
+		
+		if (!$parent) {
+            return $this->response->setStatusCode(404)
+                ->setJSON(['status' => 'error', 'message' => 'Parent not found']);
+        }
+
+		return $this->response->setJSON([
+            'status' => 'ok',
+            'data'   => [
+                'id_members'  => (int)$parent['id_members'],
+                'fname' => (string)($parent['fname'] ?? ''),
+                'lname'  => (string)($parent['lname'] ?? ''),
+                'email'      => (string)($parent['email'] ?? ''),
+            ]
+        ]);
 	}
 }

@@ -15,5 +15,67 @@
       integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
       crossorigin="anonymous"
     ></script>
+
+    <script>
+(function() {
+  const modalEl = document.getElementById('parentModal');
+  let parentId = null;
+
+  // When a link is clicked, store the id and show spinner
+  document.addEventListener('click', function(e) {
+    const a = e.target.closest('.parent-link');
+    if (!a) return;
+
+    e.preventDefault();
+    parentId = a.getAttribute('data-id');
+
+    document.getElementById('parent-loading').classList.remove('d-none');
+    document.getElementById('parent-data').classList.add('d-none');
+    document.getElementById('parent-error').classList.add('d-none');
+  });
+
+  // When modal is shown, fetch the JSON
+  modalEl.addEventListener('shown.bs.modal', async function() {
+    if (!parentId) return;
+
+    try {
+      const url = '<?= site_url('members/parent') ?>/' + encodeURIComponent(parentId);
+      const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+
+      if (!res.ok) {
+        throw new Error('HTTP ' + res.status);
+      }
+
+      const json = await res.json();
+      if (json.status !== 'ok') {
+        throw new Error(json.message || 'Unknown error');
+      }
+
+      const d = json.data || {};
+      document.getElementById('p-id').textContent    = d.id_members ?? '';
+      document.getElementById('p-fname').textContent = d.fname ?? '';
+      document.getElementById('p-lname').textContent = d.lname ?? '';
+      document.getElementById('p-email').textContent = d.email ?? '';
+
+      document.getElementById('parent-loading').classList.add('d-none');
+      document.getElementById('parent-error').classList.add('d-none');
+      document.getElementById('parent-data').classList.remove('d-none');
+
+    } catch (err) {
+      document.getElementById('parent-loading').classList.add('d-none');
+      const box = document.getElementById('parent-error');
+      box.textContent = 'Could not load parent details: ' + err.message;
+      box.classList.remove('d-none');
+      document.getElementById('parent-data').classList.add('d-none');
+    }
+  });
+
+  // Reset id when modal hides
+  modalEl.addEventListener('hidden.bs.modal', function() {
+    parentId = null;
+  });
+})();
+</script>
+
   </body>
 </html>
