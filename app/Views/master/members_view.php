@@ -13,24 +13,24 @@
           function nextDir($cur) { return $cur === 'ASC' ? 'DESC' : 'ASC'; }
 
           $columns = [
-              'id_members'  => 'ID',
               'lname'  => 'Name',
               'email'      => 'Email',
               'callsign'      => 'Callsign',
               'cur_year'      => 'Current Year',
-              'parent_primary'      => 'Parent ID',
+              'parent_primary'      => 'Mem Type',
           ];
         ?>
 
-        <?php foreach ($columns as $col => $label): 
-            $arrow = ($sort === $col)
-                ? ($dir === 'ASC' ? '↑' : '↓')
-                : '';
-            $link = site_url('members?sort=' . $col . '&dir=' . nextDir($dir));
+        <?php foreach ($columns as $col => $label):
+            $arrow    = ($sort === $col) ? ($dir === 'ASC' ? '↑' : '↓') : '↕';
+            $arrowDir = ($sort === $col) ? nextDir($dir) : 'ASC';
+            $link     = site_url('members?sort=' . $col . '&dir=' . $arrowDir . '&page=' . (int)($page));
         ?>
           <th>
           <?= esc($label) ?>
-            <a href="<?= $link ?>" class="ms-1 text-decoration-none fs-4 fw-bold" style="color: black;"><?= $arrow ?: '↕' ?></a>   
+          <?php if($col != 'parent_primary' && $label != 'Current Year') {?>
+            <a href="<?= $link ?>" class="ms-1 text-decoration-none fs-4 fw-bold" style="color: black;"><?= $arrow ?: '↕' ?></a>
+          <?php } ?>
           </th>
         <?php endforeach; ?>
       </tr>
@@ -39,8 +39,8 @@
       <tbody>
       <?php foreach ($members as $m): ?>
         <tr>
-          <td><?= esc($m['id_members']) ?></td>
           <td><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#detailsModal<?= esc($m['id_members']) ?>"><?= esc($m['lname'] ?? '') . ', ' .  esc($m['fname'] ?? '') ?></a>
+
         <!-- Modal -->
         <div class="modal fade" id="detailsModal<?= esc($m['id_members']) ?>" tabindex="-1" aria-labelledby="detailsModalLabel<?= esc($m['id_members']) ?>" aria-hidden="true">
             <div class="modal-dialog">
@@ -66,8 +66,9 @@
                 </div>
                 </div>
             </div>
-          </div>
-        
+        </div>
+        <!-- End of Modal -->
+
         </td>
           <td><?= esc($m['email'] ?? '') ?></td>
           <td><?= esc($m['callsign'] ?? '') ?></td>
@@ -79,10 +80,10 @@
                  data-id="<?= esc($m['parent_primary']) ?>"
                  data-bs-toggle="modal"
                  data-bs-target="#parentModal">
-                <?= esc($m['parent_primary']) ?>
+                <?= esc($m['description']) ?>
               </a>
             <?php else: ?>
-              none
+                <?= esc($m['description']) ?>
             <?php endif; ?>
           </td>
           
@@ -92,11 +93,58 @@
     </table>
         </div>
 
-        <!-- Pagination links -->
-        <div class="py-3">
-            <div class="my-pager" style=""><?= $pager->links('members', 'default_full') ?></div>
-        </div>
+ <?php
+// Inputs passed from controller:
+// $page (int), $perPage (int), $total (int), $sort (string), $dir (string)
 
+$page       = max(1, (int)($page ?? 1));
+$perPage    = max(1, (int)($perPage ?? 20));
+$total      = max(0, (int)($total ?? 0));
+$pageCount  = max(1, (int)ceil($total / $perPage));
+
+$maxLinks = 4; // show at most 4 numbered links
+$half     = intdiv($maxLinks, 2);
+
+// compute sliding window [start..end]
+$start = max(1, $page - $half);
+$end   = min($pageCount, $start + $maxLinks - 1);
+if ($end - $start + 1 < $maxLinks) {
+    $start = max(1, $end - $maxLinks + 1);
+}
+
+// helper to keep sort/dir in URLs
+function pageUrl($p, $sort, $dir) {
+    return site_url('members?sort=' . urlencode($sort) . '&dir=' . urlencode($dir) . '&page=' . (int)$p);
+}
+?>
+
+<nav aria-label="Page navigation" class="mt-3">
+  <ul class="pagination">
+
+    <!-- First / Prev -->
+    <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+      <a class="page-link" href="<?= $page > 1 ? pageUrl(1, $sort, $dir) : '#' ?>" aria-label="First">&laquo;</a>
+    </li>
+    <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+      <a class="page-link" href="<?= $page > 1 ? pageUrl($page - 1, $sort, $dir) : '#' ?>" aria-label="Previous">&lsaquo;</a>
+    </li>
+
+    <!-- Numbered (max 4) -->
+    <?php for ($i = $start; $i <= $end; $i++): ?>
+      <li class="page-item <?= $i === $page ? 'active' : '' ?>">
+        <a class="page-link" href="<?= pageUrl($i, $sort, $dir) ?>"><?= $i ?></a>
+      </li>
+    <?php endfor; ?>
+
+    <!-- Next / Last -->
+    <li class="page-item <?= $page >= $pageCount ? 'disabled' : '' ?>">
+      <a class="page-link" href="<?= $page < $pageCount ? pageUrl($page + 1, $sort, $dir) : '#' ?>" aria-label="Next">&rsaquo;</a>
+    </li>
+    <li class="page-item <?= $page >= $pageCount ? 'disabled' : '' ?>">
+      <a class="page-link" href="<?= $page < $pageCount ? pageUrl($pageCount, $sort, $dir) : '#' ?>" aria-label="Last">&raquo;</a>
+    </li>
+  </ul>
+</nav>
         <!-- Parent Details Modal -->
         <div class="modal fade" id="parentModal" tabindex="-1" aria-labelledby="parentModalLabel" aria-hidden="true">
         <div class="modal-dialog">

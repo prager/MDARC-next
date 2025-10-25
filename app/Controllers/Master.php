@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Controllers;
+use App\Controllers\BaseController;
+use CodeIgniter\I18n\Time;
+use Config\Services;
 
 class Master extends BaseController
 {    var $username;
@@ -310,50 +313,108 @@ class Master extends BaseController
 		}
 		echo view('template/footer');
 	}
+	private function flushMultiResults($db): void
+    {
+        // Clear any remaining result sets after CALL so subsequent queries run cleanly
+        $conn = $db->connID; // MySQLi
+        if (method_exists($conn, 'more_results')) {
+            while ($conn->more_results() && $conn->next_result()) {
+                $extra = $conn->use_result();
+                if ($extra instanceof \mysqli_result) {
+                    $extra->free();
+                }
+            }
+        }
+    }
 
 	public function show_members() {
+		if($this->check_master()) {
+			echo view('template/header_master');
+			$db    = \Config\Database::connect();
+			$pager = Services::pager();
 
-		echo view('template/header_master');
-   
-		// --- read sort parameters from URL query (e.g., ?sort=first_name&dir=DESC)
-        $sort = $this->request->getGet('sort') ?? 'lname';
-        $dir  = strtoupper($this->request->getGet('dir') ?? 'ASC');
-        $dir  = in_array($dir, ['ASC', 'DESC']) ? $dir : 'ASC';
+			// Sorting (whitelist)
+			$allowedSort = ['id_members','fname','lname','email','callsign'];
+			$sort = $this->request->getGet('sort') ?? 'lname';
+			if (!in_array($sort, $allowedSort, true)) $sort = 'lname';
 
-		$lic = array('SWL', 'Technician', 'General', 'Advanced', 'Amateur Extra');
+			$dir  = strtoupper($this->request->getGet('dir') ?? 'ASC');
+			$dir  = in_array($dir, ['ASC','DESC'], true) ? $dir : 'ASC';
 
-        $data = [
-            'members' => $this->mems_mod->getList(17, $sort, $dir),
-            'pager'   => $this->mems_mod->pager,
-            'sort'    => $sort,
-            'dir'     => $dir,
-			'lic'	=> $lic,
-        ];
+			// Pagination
+			$perPage = 17;
+			$page    = max(1, (int)($this->request->getGet('page') ?? 1));
+			$offset  = ($page - 1) * $perPage;
 
-		echo view('master/members_view', $data);
+			// Filter: cur_year >= current year
+			$now  = Time::now('America/Los_Angeles');
+			$year = (int)$now->format('Y');
 
-		echo view('template/footer');
+			// 1) Total rows via SP
+			$total = 0;
+			$res   = $db->query('CALL CountMembers(?)', [$year]);
+			if ($res) {
+				$row = $res->getRowArray();
+				$total = (int)($row['total'] ?? 0);
+				$res->freeResult();
+			}
+			$this->flushMultiResults($db);
+
+			// 2) Page rows via SP
+			$members = [];
+			$res2 = $db->query('CALL GetMembersPaged(?,?,?,?,?)', [$year, $sort, $dir, $perPage, $offset]);
+			if ($res2) {
+				$members = $res2->getResultArray();
+				$res2->freeResult();
+			}
+			$this->flushMultiResults($db);
+
+			// Build pager HTML (we’re not using Model::paginate())
+			//$pagerLinks = $pager->makeLinks($page, $perPage, $total, 'bootstrap_full');
+			$data = [
+				'members'    => $members,
+				'pager'      => $pager,        // keep if you want, not used directly
+				//'pagerLinks' => $pagerLinks,   // rendered HTML
+				'sort'       => $sort,
+				'dir'        => $dir,
+				'page'       => $page,
+				'total'      => $total,
+				'perPage'    => $perPage,
+			];
+
+			echo view('master/members_view', $data);
+			echo view('template/footer');
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+		}
 	}
 
 	public function show_parent(int $id) {
-		
-		$parent = $this->mems_mod->select('id_members, fname, lname, email')
-		->where('id_members', $id)
-		->first();
-		
-		if (!$parent) {
+		$db  = \Config\Database::connect();
+        $res = $db->query('CALL GetMemberById(?)', [$id]);
+
+        $parent = $res ? $res->getRowArray() : null;
+        if ($res) $res->freeResult();
+        $this->flushMultiResults($db);
+
+        if (!$parent) {
             return $this->response->setStatusCode(404)
                 ->setJSON(['status' => 'error', 'message' => 'Parent not found']);
         }
 
-		return $this->response->setJSON([
+        return $this->response->setJSON([
             'status' => 'ok',
             'data'   => [
                 'id_members'  => (int)$parent['id_members'],
                 'fname' => (string)($parent['fname'] ?? ''),
                 'lname'  => (string)($parent['lname'] ?? ''),
                 'email'      => (string)($parent['email'] ?? ''),
+                'callsign'      => (string)($parent['callsign'] ?? ''),
             ]
         ]);
-	}
+    }
 }
