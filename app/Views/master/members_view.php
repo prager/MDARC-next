@@ -2,7 +2,13 @@
 
 <div class="container mt-5 pt-4">
     <div class="row">
-    <h4 class="mb-3">Current Members</h4>
+        <?php if($forYear != 0) { ?>
+            <h4 class="mb-3">Current Members</h4>
+            <p> Total of <?php echo $numMems; ?> members. Click for <a href="<?php echo base_url() . 'index.php/all-members'; ?>" class="text-decoration-none">All Members</a></p>
+        <?php } else { ?>
+            <h4 class="mb-3">All Members</h4>
+            <p>Total of <?php echo $numMems; ?> members. Click for <a href="<?php echo base_url() . 'index.php/members'; ?>" class="text-decoration-none">Current Members</a> only</p>
+        <?php } ?>
         <div class="col">
         <div class="table-responsive shadow-sm">
     <table class="table table-bordered table-striped align-middle">
@@ -16,19 +22,27 @@
               'lname'  => 'Name',
               'email'      => 'Email',
               'callsign'      => 'Callsign',
-              'cur_year'      => 'Current Year',
+              'license' => 'License',
+              'mem_since'      => 'Member Since',
               'parent_primary'      => 'Mem Type',
+              'pay_date' => 'Pay Date',
+              'flag' => 'Deactivate'
           ];
         ?>
 
         <?php foreach ($columns as $col => $label):
             $arrow    = ($sort === $col) ? ($dir === 'ASC' ? '↑' : '↓') : '↕';
             $arrowDir = ($sort === $col) ? nextDir($dir) : 'ASC';
-            $link     = site_url('members?sort=' . $col . '&dir=' . $arrowDir . '&page=' . (int)($page));
+            if($forYear != 0) {
+                $link     = site_url('members?sort=' . $col . '&dir=' . $arrowDir . '&page=' . (int)($page));
+            }
+            else {
+                $link     = site_url('all-members?sort=' . $col . '&dir=' . $arrowDir . '&page=' . (int)($page));
+            }
         ?>
           <th>
           <?= esc($label) ?>
-          <?php if($col != 'parent_primary' && $label != 'Current Year') {?>
+          <?php if($col != 'parent_primary' && $col != 'mem_since' && $col != 'pay_date'&& $col != 'license' && $col != 'flag') {?>
             <a href="<?= $link ?>" class="ms-1 text-decoration-none fs-4 fw-bold" style="color: black;"><?= $arrow ?: '↕' ?></a>
           <?php } ?>
           </th>
@@ -39,40 +53,13 @@
       <tbody>
       <?php foreach ($members as $m): ?>
         <tr>
-          <td><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#detailsModal<?= esc($m['id_members']) ?>"><?= esc($m['lname'] ?? '') . ', ' .  esc($m['fname'] ?? '') ?></a>
-
-        <!-- Modal -->
-        <div class="modal fade" id="detailsModal<?= esc($m['id_members']) ?>" tabindex="-1" aria-labelledby="detailsModalLabel<?= esc($m['id_members']) ?>" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="detailsModalLabel<?= esc($m['id_members']) ?>">Primary Member ID: <?= esc($m['id_members']) ?></h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                <div class="row">
-                    <div class="col offset-lg-1">
-                        Name: <?= esc($m['lname'] ?? '') . ', ' .  esc($m['fname'] ?? '') ?><br />
-                        Email: <?= esc($m['email'] ?? '') ?> <br />
-                        Callsign: <?= esc($m['callsign'] ?? '') ?><br />
-                        Address: <br /> <?= esc($m['address'] ?? '') ?><br />
-                        <?= esc($m['city'] ?? ''). ', ' . esc($m['state'] ?? '') . ' ' . esc($m['zip'] ?? '') ?>
-                    </div>
-                </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
-                </div>
-            </div>
-        </div>
-        <!-- End of Modal -->
-
+          <td><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#editMem<?= esc($m['id_members']) ?>"><?= esc($m['lname'] ?? '') . ', ' .  esc($m['fname'] ?? '') ?></a>
+          <?php include 'modal_update_mem.php'; ?>
         </td>
           <td><?= esc($m['email'] ?? '') ?></td>
           <td><?= esc($m['callsign'] ?? '') ?></td>
-          <td><?= esc($m['cur_year'] ?? '') ?></td>
+          <td><?= esc($m['license'] ?? '') ?></td>
+          <td><?= esc($m['mem_since'] ?? '') ?></td>
           <td>
           <?php if (!empty($m['parent_primary'])): ?>
               <a href="#"
@@ -86,7 +73,10 @@
                 <?= esc($m['description']) ?>
             <?php endif; ?>
           </td>
-          
+          <td><?= esc(date('m-d-Y', strtotime($m['pay_date'])) ?? '') ?></td>
+          <td class="text-center">
+              <a href="#" data-bs-toggle="modal" data-bs-target="#delMem<?= esc($m['id_members']) ?>"><i class="bi bi-trash"></i></a>
+          </td>
         </tr>
       <?php endforeach; ?>
       </tbody>
@@ -113,9 +103,17 @@ if ($end - $start + 1 < $maxLinks) {
 }
 
 // helper to keep sort/dir in URLs
-function pageUrl($p, $sort, $dir) {
-    return site_url('members?sort=' . urlencode($sort) . '&dir=' . urlencode($dir) . '&page=' . (int)$p);
+if($forYear != 0) {
+    function pageUrl($p, $sort, $dir) {
+        return site_url('members?sort=' . urlencode($sort) . '&dir=' . urlencode($dir) . '&page=' . (int)$p);
+    }
 }
+else {
+    function pageUrl($p, $sort, $dir) {
+        return site_url('all-members?sort=' . urlencode($sort) . '&dir=' . urlencode($dir) . '&page=' . (int)$p);
+    }
+}
+
 ?>
 
 <nav aria-label="Page navigation" class="mt-3">
