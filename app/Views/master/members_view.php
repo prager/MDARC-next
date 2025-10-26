@@ -26,7 +26,7 @@
               'mem_since'      => 'Member Since',
               'parent_primary'      => 'Mem Type',
               'pay_date' => 'Pay Date',
-              'flag' => 'Deactivate'
+              'pl1' => 'Deactivate'
           ];
         ?>
 
@@ -42,7 +42,7 @@
         ?>
           <th>
           <?= esc($label) ?>
-          <?php if($col != 'parent_primary' && $col != 'mem_since' && $col != 'pay_date'&& $col != 'license' && $col != 'flag') {?>
+          <?php if($col != 'parent_primary' && $col != 'mem_since' && $col != 'pay_date'&& $col != 'license' && $col != 'pl1') {?>
             <a href="<?= $link ?>" class="ms-1 text-decoration-none fs-4 fw-bold" style="color: black;"><?= $arrow ?: '↕' ?></a>
           <?php } ?>
           </th>

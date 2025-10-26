@@ -223,15 +223,76 @@ class Master extends BaseController
 
 	public function search() {
 		if($this->check_master()) {
-	  		echo view('template/header_master.php');
-			$search_str = $this->request->getPost('search');
-			$res = $this->master_mod->search($search_str);
-			$data['msg'] = $res['msg'];
-			$data['mems'] = $res['mems'];
-			$data = $this->master_mod->search($search_str);
-			$data['states'] = $this->data_mod->get_states_array();
-			$data['lic'] = $this->data_mod->get_lic();
-			$data['mem_types'] = $this->staff_mod->get_mem_types();
+			echo view('template/header_master.php');
+			
+			//$search_str = $this->request->getPost('search');
+			$q  = trim((string) ($this->request->getPost('search') ?? ''));
+			$db = \Config\Database::connect();
+	
+			// Call the stored procedure (it already returns empty set if q is empty)
+			$query = $db->query('CALL Search_Members(?)', [$q]);
+			$rows  = $query->getResultArray() ?? [];
+	
+			// Always clean up after CALL to avoid "Commands out of sync"
+			$query->freeResult();
+			while ($db->connID->more_results() && $db->connID->next_result()) {
+				if ($extra = $db->connID->store_result()) {
+					$extra->free();
+				}
+			}
+			$this->flushMultiResults($db);
+
+			// Call stored procedure directly
+			$query = $db->query('CALL Get_Mem_Types()');
+			$types = $query->getResultArray();
+	
+			// IMPORTANT: free the result set to avoid "commands out of sync"
+			$query->freeResult();
+			while ($db->connID->more_results() && $db->connID->next_result()) {
+				if ($extra = $db->connID->store_result()) {
+					$extra->free();
+				}
+			}
+			$this->flushMultiResults($db);
+	
+			$count = count($rows);
+	
+			if ($count === 0) {
+				$flash = 'No results found';
+				$flashType = 'warning';
+			} elseif ($count === 100) {
+				$flash = 'The first 100 records is shown. You need to refine your search.';
+				$flashType = 'danger';
+			} else {
+				$flash = $count . ' members found';
+				$flashType = 'success';
+			}
+
+			$licence = array('SWL', 'Technician', 'General', 'Advanced', 'Amateur Extra');
+
+			// All U.S. state abbreviations
+			$states = [
+				'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+				'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+				'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+				'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+				'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+			];
+
+			$mem_cost = $this->admin_mod->get_mem_cost();
+
+			$data = array(
+				'q'         => $q,
+				'rows'      => $rows,
+				'count'     => $count,
+				'flash'     => $flash,
+				'flashType' => $flashType,
+				'lic'	=> $licence,
+				'types' => $types, 
+				'states' => $states,
+				'mem_cost' => $mem_cost
+			);
+
 			echo view('master/search_res_view.php', $data);
 	   }
 		else {

@@ -8,6 +8,7 @@ use App\Models\User_model;
 use App\Models\Master_model;
 use App\Models\Data_model;
 use App\Models\TMembers_model;
+use App\Models\Admin_model;
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\HTTP\IncomingRequest;
@@ -50,6 +51,7 @@ abstract class BaseController extends Controller
     protected ?Master_model  $master_mod  = null;
     protected ?Data_model  $data_mod  = null;
     protected ?TMembers_model $mems_mod = null;
+    protected ?Admin_model $admin_mod = null;
 
     /**
      * Be sure to declare properties for any property fetch you initialized.
@@ -72,6 +74,7 @@ abstract class BaseController extends Controller
         $this->master_mod  = model(Master_model::class);
         $this->data_mod  = model(Data_model::class);
         $this->mems_mod = model(TMembers_model::class);
+        $this->admin_mod = model(Admin_model::class);
 
         // E.g.: $this->session = service('session');
     }
