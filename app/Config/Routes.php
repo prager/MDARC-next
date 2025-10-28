@@ -28,7 +28,14 @@ $routes->get('activate/(:num)', 'Master::activate/$1');
 $routes->get('unauthorize/(:num)', 'Master::authorize/$1');
 $routes->get('authorize/(:num)', 'Master::authorize/$1');
 $routes->get('add-mem', 'Master::add_mem');
+
 $routes->get('members', 'Master::show_members');
 $routes->get('all-members', 'Master::show_all_members');
 
-$routes->get('members/parent/(:num)', 'Master::show_parent/$1'); // JSON endpoint
+$routes->get('members/parent/(:num)',   'Master::parent/$1');
+$routes->get('members/children/(:num)', 'Master::children/$1');
+// (optional) also keep query-string versions:
+$routes->get('members/children',        'Master::children');
+
+$routes->add('add-fam/(:num)', 'Master::add_fam_mem');
+

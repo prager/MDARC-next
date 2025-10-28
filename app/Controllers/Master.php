@@ -576,7 +576,7 @@ class Master extends BaseController
 		}
 	}
 
-	public function show_parent(int $id) {
+	public function parent(int $id = null) {
 		$db  = \Config\Database::connect();
         $res = $db->query('CALL GetMemberById(?)', [$id]);
 
@@ -588,16 +588,68 @@ class Master extends BaseController
             return $this->response->setStatusCode(404)
                 ->setJSON(['status' => 'error', 'message' => 'Parent not found']);
         }
+		$fullName = (string)($parent['fname'] ?? ' ') . ' ' . (string)($parent['lname'] ?? ' ');
 
         return $this->response->setJSON([
             'status' => 'ok',
             'data'   => [
-                'id_members'  => (int)$parent['id_members'],
-                'fname' => (string)($parent['fname'] ?? ''),
-                'lname'  => (string)($parent['lname'] ?? ''),
-                'email'      => (string)($parent['email'] ?? ''),
-                'callsign'      => (string)($parent['callsign'] ?? ''),
+			'id_members'  => (int)$parent['id_members'],
+			'fname' => (string)($parent['fname'] ?? ''),
+			'lname'  => (string)($parent['lname'] ?? ''),
+			'fullname'  => $fullName,
+			'email'      => (string)($parent['email'] ?? ''),
+			'callsign'      => (string)($parent['callsign'] ?? ''),
             ]
         ]);
     }
+	public function children(int $parentId = null)
+    {
+        $pid = (int)($parentId ?? $this->request->getGet('parent_id') ?? 0);
+		if ($pid <= 0) {
+			return $this->response->setStatusCode(400)->setJSON(['error' => 'Invalid parent_id']);
+		}
+
+		$db = \Config\Database::connect();
+		$q  = $db->query('CALL GetChildMembers(?)', [$pid]);
+		$rows = $q->getResultArray() ?? [];
+
+		if ($q) $q->freeResult();
+		$this->flushMultiResults($db);
+
+		return $this->response->setJSON(['children' => $rows]);
+    }
+	public function add_fam_mem(int $id = null) {
+		if($this->check_master()) {
+			// $this->uri->setSilent();
+			// $param['parent_primary'] = $this->uri->getSegment(2);
+			$param['parent_primary'] = $id;
+			$param['callsign'] =  trim($this->request->getPost('callsign'));
+			$param['fname'] = $this->request->getPost('fname');
+			$param['lname'] = trim($this->request->getPost('lname'));
+			$param['license'] = $this->request->getPost('sel_lic');
+			$param['w_phone'] = $this->request->getPost('w_phone');
+			$param['h_phone'] = $this->request->getPost('h_phone');
+			$param['id_mem_types'] = $this->request->getPost('mem_types');
+			$param['mem_type'] = $this->staff_mod->get_mem_types()[$param['id_mem_types']];
+			$param['active'] = TRUE;
+			$param['mem_since'] = date('Y', time());
+			$param['comment'] = $this->request->getPost('comment');
+			$email = $this->request->getPost('email');
+			filter_var($email, FILTER_VALIDATE_EMAIL) ? $param['email'] = $email : $param['email'] = 'none';
+			$this->request->getPost('arrl') == 'on' ? $param['arrl_mem'] = 'TRUE' : $param['arrl_mem'] = 'FALSE';
+			$retstat = $this->mem_mod->add_fam_mem($param);
+			if($retstat['flag']) {$this->show_members();} 
+			else {
+				$data['title'] = 'Database Error';
+				$data['msg'] = $retstat['err'];
+			}
+		}
+		else {
+			echo view('template/header');
+			$this->login_mod->logout();
+			$data['title'] = 'Login Error';
+			$data['msg'] = 'There was an error while checking your credentials.<br><br>';
+			echo view('status/status_view.php', $data);
+		}
+	}
 }

@@ -41,15 +41,14 @@
           <div class="col-lg-6 py-2">
             <label for="memType">Member Type </label>
             <select id="id_mem_types" name="id_mem_types" class="form-select" required>
-          <option value="" disabled>-- Choose a Membership Type --</option>
-
-          <?php foreach ($types as $t): ?>
-            <option value="<?= esc($t['id_mem_types']) ?>"
-              <?= isset($m['id_mem_types']) && $m['id_mem_types'] == $t['id_mem_types'] ? 'selected' : '' ?>>
-              <?= esc($t['description']) ?>
-            </option>
-          <?php endforeach; ?>
-        </select>
+              <option value="" disabled>-- Choose a Membership Type --</option>
+              <?php foreach ($types as $t): ?>
+                <option value="<?= esc($t['id_mem_types']) ?>"
+                  <?= isset($m['id_mem_types']) && $m['id_mem_types'] == $t['id_mem_types'] ? 'selected' : '' ?>>
+                  <?= esc($t['description']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
           </div>
         </div>
         <div class="row">
