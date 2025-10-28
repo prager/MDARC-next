@@ -108,9 +108,8 @@
                     </table>
                   </div>
                 </div>
-              </div>
 
-              <div class="row">
+              <div class="row mt-3">
                 <div class="col">
                   <div class="accordion" id="accAddFam">
                     <div class="accordion-item">
@@ -122,7 +121,6 @@
                       <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accAddFam">
                         <div class="accordion-body">
                         <form id="parentForm" method="post" action="">
-                          <div class="modal-body">
                           <section class="px-2">
                             <div class="row mb-3">
                               <div class="col-lg-3">
@@ -194,21 +192,22 @@
                               <div class="col py-1">
                                   <label for="comment">Comments</label>
                                   <textarea
-                                  class="form-control" id="comment" name="comment" rows="7" placeholder="Any Comment"></textarea>
+                                  class="form-control" id="comment" name="comment" rows="3" placeholder="Any Comment"></textarea>
                               </div>
                             </div>
+                          <div class="row mt-2">
+                            <div class="col">
+                              <button type="submit" class="btn btn-primary">Save changes</button>
+                            </div>
+                          </div>
                           </section>
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Save changes</button>
-                          </div>
                         </form>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
               </div>
               <div class="modal-footer">
                 <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
