@@ -15,7 +15,7 @@ $routes->post('master-edit-faq', 'Master::edit_faq');
 $routes->post('load-admin/(:num)', 'Master::load_admin/$1');
 $routes->post('reset-user/(:num)', 'Master::reset_user/$1');
 $routes->post('master-search', 'Master::search');
-$routes->post('add-fam/(:num)', 'Master::add_fam_mem');
+$routes->post('master/add-fam/(:num)', 'Master::add_fam_mem/$1');
 $routes->post('edit-mem/(:num)', 'Master::edit_mem/$1');
 $routes->post('edit-mem', 'Master::edit_mem');
 

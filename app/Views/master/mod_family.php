@@ -45,6 +45,7 @@
                     <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accAddFam">
                     <div class="accordion-body">
                     <form id="parentForm" method="post" action="">
+                    <input type="hidden" id="parent_id_input" name="parent_id_input" value="">
                         <section class="px-2">
                         <div class="row mb-3">
                             <div class="col-lg-3">

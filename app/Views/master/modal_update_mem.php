@@ -5,7 +5,7 @@
         <h5 class="modal-title" id="editMemLabel<?= esc($m['id_members']) ?>"><?= esc($m['fname'] ?? '') . ' ' .  esc($m['lname'] ?? '') . ' ' .  esc($m['callsign'] ?? ''). ' / ID: ' .  esc($m['id_members'] ?? '') ?></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form action="<?php echo base_url() . '/index.php/edit-mem/'. esc($m['id_members']); ?>" method="post">
+      <form action="<?php echo base_url() . 'index.php/edit-mem/'. esc($m['id_members']); ?>" method="post">
       <div class="modal-body">
       <section class="px-2">
         <div class="row">
@@ -133,7 +133,7 @@
           </div>
           <div class="col-lg py-2">
             <label for="pay_date">Payment Date</label>
-            <input type="date" class="form-control" id="pay_date" name="pay_date" value="<?= esc(date('Y-m-d', strtotime($m['pay_date']))) ?>">
+            <input type="date" class="form-control" id="pay_date" name="pay_date" value="<?php echo date('Y-m-d', $m['paym_date']); ?>">
           </div>
         </div>
         <div class="row">

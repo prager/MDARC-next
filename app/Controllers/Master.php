@@ -340,7 +340,7 @@ class Master extends BaseController
 			$param['w_phone'] = $this->request->getPost('w_phone');
 			$param['h_phone'] = $this->request->getPost('h_phone');
 			$param['comment'] = trim($this->request->getPost('comment'));
-			$param['id_mem_types'] = $this->request->getPost('mem_types');
+			$param['id_mem_types'] = $this->request->getPost('id_mem_types');
 			$param['timestamp'] = time();
 			$email = $this->request->getPost('email');
 			filter_var($email, FILTER_VALIDATE_EMAIL) ? $param['email'] = $email : $param['email'] = 'none';
@@ -427,7 +427,7 @@ class Master extends BaseController
 			}
 			$this->flushMultiResults($db);	
 
-			// 2) Page rows via SP
+			// 3) Page rows for deactivated
 			$deact = [];
 			$res3 = $db->query('CALL GetMembers99()');
 			if ($res3) {
@@ -436,6 +436,7 @@ class Master extends BaseController
 			}
 			$this->flushMultiResults($db);
 
+			// 4) Page rows for receiving the Carrier
 			$carr = [];
 			$res4 = $db->query('CALL GetHardNewsMembers()');
 			if ($res4) {
@@ -540,6 +541,24 @@ class Master extends BaseController
 			}
 			$this->flushMultiResults($db);
 
+			// 3) Page rows for deactivated
+			$deact = [];
+			$res3 = $db->query('CALL GetMembers99()');
+			if ($res3) {
+				$deact = $res3->getResultArray();
+				$res3->freeResult();
+			}
+			$this->flushMultiResults($db);
+
+			// 4) Page rows for receiving the Carrier
+			$carr = [];
+			$res4 = $db->query('CALL GetHardNewsMembers()');
+			if ($res4) {
+				$carr = $res4->getResultArray();
+				$res4->freeResult();
+			}
+			$this->flushMultiResults($db);
+
 			// Call stored procedure directly
 			$query = $db->query('CALL Get_Mem_Types()');
 			$types = $query->getResultArray();
@@ -566,6 +585,8 @@ class Master extends BaseController
 
 			// Build pager HTML (we’re not using Model::paginate())
 			$data = [
+				'carr' => $carr,
+				'deact' => $deact,
 				'members'    => $members,
 				'pager'      => $pager,        // keep if you want, not used directly
 				'sort'       => $sort,
@@ -642,7 +663,7 @@ class Master extends BaseController
 			$param['license'] = $this->request->getPost('sel_lic');
 			$param['w_phone'] = $this->request->getPost('w_phone');
 			$param['h_phone'] = $this->request->getPost('h_phone');
-			$param['id_mem_types'] = $this->request->getPost('mem_types');
+			$param['id_mem_types'] = $this->request->getPost('id_mem_types');
 			$param['mem_type'] = $this->staff_mod->get_mem_types()[$param['id_mem_types']];
 			$param['active'] = TRUE;
 			$param['mem_since'] = date('Y', time());
@@ -704,4 +725,5 @@ class Master extends BaseController
 			echo view('template/footer');
 		}
 	}
+	
 }

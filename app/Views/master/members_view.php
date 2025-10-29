@@ -96,7 +96,6 @@
                                     // Child member: open the family using the parent's id
                                     $parentId = (int)$m['parent_primary'];
                                 }
-
                                 if ($parentId > 0): ?>
                                   <a href="#"
                                     class="family-link text-decoration-none"

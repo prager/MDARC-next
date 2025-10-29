@@ -9,6 +9,7 @@ use App\Models\Master_model;
 use App\Models\Data_model;
 use App\Models\TMembers_model;
 use App\Models\Admin_model;
+use App\Models\Member_model;
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\HTTP\IncomingRequest;
@@ -52,8 +53,8 @@ abstract class BaseController extends Controller
     protected ?Data_model  $data_mod  = null;
     protected ?TMembers_model $mems_mod = null;
     protected ?Admin_model $admin_mod = null;
-
-    /**
+    protected ?Member_model $mem_mod = null;
+      /**
      * Be sure to declare properties for any property fetch you initialized.
      * The creation of dynamic property is deprecated in PHP 8.2.
      */
@@ -75,6 +76,7 @@ abstract class BaseController extends Controller
         $this->data_mod  = model(Data_model::class);
         $this->mems_mod = model(TMembers_model::class);
         $this->admin_mod = model(Admin_model::class);
+        $this->mem_mod = model(Member_model::class);
 
         // E.g.: $this->session = service('session');
     }
