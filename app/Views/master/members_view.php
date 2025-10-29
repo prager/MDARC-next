@@ -50,7 +50,7 @@
                                 'license' => 'License',
                                 'mem_since'      => 'Member Since',
                                 'parent_primary'      => 'Mem Type',
-                                'pay_date' => 'Pay Date',
+                                'paym_date' => 'Pay Date',
                                 'pl1' => 'Deactivate'
                             ];
                           ?>
@@ -67,7 +67,7 @@
                           ?>
                             <th>
                             <?= esc($label) ?>
-                            <?php if($col != 'parent_primary' && $col != 'mem_since' && $col != 'pay_date'&& $col != 'license' && $col != 'pl1') {?>
+                            <?php if($col != 'parent_primary' && $col != 'mem_since' && $col != 'paym_date'&& $col != 'license' && $col != 'pl1') {?>
                               <a href="<?= $link ?>" class="ms-1 text-decoration-none fs-4 fw-bold" style="color: black;"><?= $arrow ?: '↕' ?></a>
                             <?php } ?>
                             </th>
@@ -108,7 +108,7 @@
                                   <?= esc($m['description'] ?? '') ?>
                                 <?php endif; ?>
                             </td>
-                            <td><?= esc(date('m-d-Y', strtotime($m['pay_date'])) ?? '') ?></td>
+                            <td><?php echo date('Y-m-d', $m['paym_date']); ?></td>
                             <td class="text-center">
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#delMem<?= esc($m['id_members']) ?>"><i class="bi bi-trash"></i></a>
                                 <?php include 'mod_del_mem.php'; ?>
