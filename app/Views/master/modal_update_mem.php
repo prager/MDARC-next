@@ -2,7 +2,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editMemLabel<?= esc($m['id_members']) ?>"><?= esc($m['fname'] ?? '') . ' ' .  esc($m['lname'] ?? '') . ' ' .  esc($m['callsign'] ?? '') ?></h5>
+        <h5 class="modal-title" id="editMemLabel<?= esc($m['id_members']) ?>"><?= esc($m['fname'] ?? '') . ' ' .  esc($m['lname'] ?? '') . ' ' .  esc($m['callsign'] ?? ''). ' / ID: ' .  esc($m['id_members'] ?? '') ?></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form action="<?php echo base_url() . '/index.php/edit-mem/'. esc($m['id_members']); ?>" method="post">

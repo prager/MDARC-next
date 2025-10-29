@@ -353,11 +353,7 @@ class Master extends BaseController
 			$param['id'] = $id;
 
 			if ($this->staff_mod->edit_mem($param)) {
-				$param['states'] = $this->data_mod->get_states_array();
-				$param['lic'] = $this->data_mod->get_lic();
-				$param['member_types'] = $this->master_mod->get_member_types();
-				$param['page'] = 0;
-				echo view('master/members_view', $this->staff_mod->get_mems($param));
+				$this->show_members();
 			}
 			else {
 				$data['title'] = 'Douplicate Entry Error!';
@@ -430,6 +426,23 @@ class Master extends BaseController
 				$res2->freeResult();
 			}
 			$this->flushMultiResults($db);	
+
+			// 2) Page rows via SP
+			$deact = [];
+			$res3 = $db->query('CALL GetMembers99()');
+			if ($res3) {
+				$deact = $res3->getResultArray();
+				$res3->freeResult();
+			}
+			$this->flushMultiResults($db);
+
+			$carr = [];
+			$res4 = $db->query('CALL GetHardNewsMembers()');
+			if ($res4) {
+				$carr = $res4->getResultArray();
+				$res4->freeResult();
+			}
+			$this->flushMultiResults($db);
 			
 			// Call stored procedure directly
 			$query = $db->query('CALL Get_Mem_Types()');
@@ -457,6 +470,8 @@ class Master extends BaseController
 
 			// Build pager HTML (we’re not using Model::paginate())
 			$data = [
+				'carr' => $carr,
+				'deact' => $deact,
 				'members'    => $members,
 				'pager'      => $pager,        // keep if you want, not used directly
 				'sort'       => $sort,
@@ -620,8 +635,6 @@ class Master extends BaseController
     }
 	public function add_fam_mem(int $id = null) {
 		if($this->check_master()) {
-			// $this->uri->setSilent();
-			// $param['parent_primary'] = $this->uri->getSegment(2);
 			$param['parent_primary'] = $id;
 			$param['callsign'] =  trim($this->request->getPost('callsign'));
 			$param['fname'] = $this->request->getPost('fname');
@@ -650,6 +663,32 @@ class Master extends BaseController
 			$data['title'] = 'Login Error';
 			$data['msg'] = 'There was an error while checking your credentials.<br><br>';
 			echo view('status/status_view.php', $data);
+		}
+	}
+	public function delete_mem(int $id = null) {
+		if($this->check_master()) {
+			$this->staff_mod->delete_mem($id);
+			$this->show_members();
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+	}
+	public function purge_mem(int $id = null) {
+		if($this->check_master()) {
+			$this->staff_mod->purge_mem($id);
+			$this->show_members();
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
 		}
 	}
 }

@@ -172,4 +172,134 @@ class Staff_model extends Model {
       count($retarr['fam_mems']) > 0 ? $retarr['fam_flag'] = TRUE : $retarr['fam_flag'] = FALSE;
       return $retarr;
     }
+
+/**
+* Adds or edits a member
+* @param mixed $param[] for db insert and update
+* @return bool $retval whether or not the email param was ok
+*/
+  public function edit_mem($param) {
+    $param['mem_type'] = $this->get_mem_type($param['id_mem_types']);
+    $retval = TRUE;
+    $id = $param['id'];
+    unset($param['id']);
+    $db      = \Config\Database::connect();
+    $builder = $db->table('tMembers');
+    $builder->where('email', $param['email']);
+    $builder->where('callsign', $param['callsign']);
+    $builder->where('lname', $param['lname']);
+    $builder->where('fname', $param['fname']);
+    if($id != NULL) {
+      $builder->resetQuery();
+      $builder->update($param, ['id_members' => $id]);
+
+  //must figure if primary member and update the family members as well
+      $builder->resetQuery();
+      $up_arr = array('paym_date' => $param['paym_date'],
+                      'cur_year' => $param['cur_year']);
+      $builder->update($up_arr, ['parent_primary' => $id]);
+
+    }
+    elseif(($builder->countAllResults() == 0) && $this->check_dups($param)) {
+          $param['update_type'] = 'Initial insert';
+          $param['mem_type'] = 'Individual';
+          $param['mem_since'] = date('Y', time());
+          $param['cur_year'] = date('Y', time());
+          $param['ok_mem_dir'] = true;
+          if(date('m', $param['paym_date']) > 9) $param['cur_year']++;
+          $builder->resetQuery();
+          $builder->insert($param);
+        }
+    else {
+        $retval = FALSE;
+      }
+    $db->close();
+
+    return $retval;
+  }
+
+  /**
+* Check for duplicate members within 5 years
+*/
+private function check_dups($param) {
+  $retval = TRUE;
+  $db      = \Config\Database::connect();
+  $builder = $db->table('old_mems_2020');
+  $res = $builder->get()->getResult();
+  foreach($res as $mem) {
+    if(($param['email'] == $mem->email) && ((date('Y', time()) - 5) > $mem->cur_year)) {
+        $retval = FALSE;
+        break;
+      }
+  }
+  return $retval;
+}
+
+  /**
+* Returns the type description
+*/
+public function get_mem_type($type) {
+  $types = $this->get_mem_types();
+  return $types[$type];
+}
+
+/**
+* Returns the new members for a given period
+* @param int from date via unix timestamp
+* @param int to date via unix timestamp
+* @return array the member data
+*/
+public function get_new_mems($from, $to) {
+    $db = \Config\Database::connect();
+    $builder = $db->table('tMembers');
+    //$builder->where('paym_date >', $from);
+    //$builder->where('paym_date <', $to);
+    //$builder->where('mem_since', date('Y', time()));
+    //echo '<br><br><br><br>to: ' . $to;
+    $builder->where('mem_since', date('Y', $to));
+    $db->close;
+    $res = $builder->get()->getResult();
+    $retarr = array();
+    foreach($res as $mem) {
+      $mem_arr = array(
+        'id' => $mem->id_members,
+        'fname' => $mem->fname,
+        'lname' => $mem->lname,
+        'callsign' => $mem->callsign,
+        'license' => $mem->license,
+        'payment_date' => $mem->paym_date
+      );
+      array_push($retarr, $mem_arr);
+    }
+  return $retarr;
+  }
+
+  /**
+  * This doesn't delete a member, only inactivates by setting current year to 99
+  * @param int as id_members
+  */
+  public function delete_mem($id) {
+    $db      = \Config\Database::connect();
+    $builder = $db->table('tMembers');
+
+  //must also inactivate the family members for primaries
+    $builder->resetQuery();
+    $builder->update(array('cur_year' => 99), ['id_members' => $id]);
+    $builder->resetQuery();
+    $builder->update(array('cur_year' => 99), ['parent_primary' => $id]);
+  }
+  public function purge_mem($id) {
+    $db      = \Config\Database::connect();
+    $builder = $db->table('tMembers');
+    $builder->where('parent_primary', $id);
+
+// we must also purge the family members for the primary member
+    $res = $builder->get()->getResult();
+    foreach($res as $child) {
+      $builder->resetQuery();
+      $builder->delete(['id_members' => $child->id_members]);
+    }
+    $builder->resetQuery();
+    $builder->delete(['id_members' => $id]);
+  }
 }
