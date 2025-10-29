@@ -151,9 +151,9 @@
                       <tr>
                         <td><?= esc($m['id_members'] ?? $m['id_member'] ?? '') ?></td>
                         <td>
-                          <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#editMem<?= esc($m['id_members']) ?>"><?= esc($m['lname'] ?? '') . ', ' .  esc($m['fname'] ?? '') ?></a>
+                          <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#unDelMem<?= esc($m['id_members']) ?>"><?= esc($m['lname'] ?? '') . ', ' .  esc($m['fname'] ?? '') ?></a>
                         </td>
-                        <?php include 'modal_update_mem.php'; ?>
+                        <?php include 'mod_undel_mem.php'; ?>
                         <td><?= esc($m['cur_year'] ?? '') ?></td>
                         <td><?= esc($m['callsign'] ?? '') ?></td>
                         <td><?= esc($m['license'] ?? '') ?></td>

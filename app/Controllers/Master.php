@@ -691,4 +691,17 @@ class Master extends BaseController
 			echo view('template/footer');
 		}
 	}
+	public function un_delete_mem(int $id) {
+		if($this->check_master()) {
+			$this->staff_mod->un_delete_mem($id);
+			$this->show_members();
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+	}
 }

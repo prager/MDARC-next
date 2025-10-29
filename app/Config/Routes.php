@@ -33,6 +33,7 @@ $routes->get('authorize/(:num)', 'Master::authorize/$1');
 $routes->get('add-mem', 'Master::add_mem');
 $routes->get('delete-mem/(:num)', 'Master::delete_mem/$1');
 $routes->get('purge-mem/(:num)', 'Master::purge_mem/$1');
+$routes->get('un-delete-mem/(:num)', 'Master::un_delete_mem/$1');
 
 $routes->get('members', 'Master::show_members');
 $routes->get('all-members', 'Master::show_all_members');

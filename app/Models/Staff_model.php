@@ -302,4 +302,17 @@ public function get_new_mems($from, $to) {
     $builder->resetQuery();
     $builder->delete(['id_members' => $id]);
   }
+
+  /**
+  * This re-instates member by setting the current year to this year
+  * @param int as id_members
+  */
+  public function un_delete_mem($id) {
+    $db      = \Config\Database::connect();
+    $builder = $db->table('tMembers');
+    $builder->resetQuery();
+    $builder->update(array('cur_year' => date('Y', time())), ['id_members' => $id]);
+    $builder->resetQuery();
+    $builder->update(array('cur_year' => date('Y', time())), ['parent_primary' => $id]);
+  }
 }
