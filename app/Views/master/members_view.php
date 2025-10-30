@@ -108,7 +108,7 @@
                                   <?= esc($m['description'] ?? '') ?>
                                 <?php endif; ?>
                             </td>
-                            <td><?php echo date('Y-m-d', $m['paym_date']); ?></td>
+                            <td><?php echo date('m/d/Y', $m['paym_date']); ?></td>
                             <td class="text-center">
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#delMem<?= esc($m['id_members']) ?>"><i class="bi bi-trash"></i></a>
                                 <?php include 'mod_del_mem.php'; ?>

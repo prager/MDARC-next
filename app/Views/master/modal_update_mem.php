@@ -80,7 +80,7 @@
           <div class="col-lg">
             <div class="form-check">
               <label class="form-check-label" for="carrier"> Carrier Copy </label>
-              <?php if(strtoupper(esc($m['email'])) == 'TRUE') {?>
+              <?php if(strtoupper(esc($m['hard_news'])) == 'TRUE') {?>
                 <input class="form-check-input" type="checkbox" name="hard_news" checked />
               <?php }
                     else { ?>
