@@ -368,7 +368,6 @@ class Master extends BaseController
 			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
 			echo view('status/status_view', $data);
 		}
-		echo view('template/footer');
 	}
 	private function flushMultiResults($db): void
     {
@@ -444,6 +443,15 @@ class Master extends BaseController
 				$res4->freeResult();
 			}
 			$this->flushMultiResults($db);
+
+			// 5) Page rows for the silent keys
+			$silents = [];
+			$res5 = $db->query('CALL GetSilentKeys()');
+			if ($res5) {
+				$silents = $res5->getResultArray();
+				$res5->freeResult();
+			}
+			$this->flushMultiResults($db);
 			
 			// Call stored procedure directly
 			$query = $db->query('CALL Get_Mem_Types()');
@@ -471,6 +479,7 @@ class Master extends BaseController
 
 			// Build pager HTML (we’re not using Model::paginate())
 			$data = [
+				'silents' => $silents,
 				'carr' => $carr,
 				'deact' => $deact,
 				'members'    => $members,
@@ -559,6 +568,15 @@ class Master extends BaseController
 			}
 			$this->flushMultiResults($db);
 
+			// 5) Page rows for the silent keys
+			$silents = [];
+			$res5 = $db->query('CALL GetSilentKeys()');
+			if ($res5) {
+				$silents = $res5->getResultArray();
+				$res5->freeResult();
+			}
+			$this->flushMultiResults($db);
+
 			// Call stored procedure directly
 			$query = $db->query('CALL Get_Mem_Types()');
 			$types = $query->getResultArray();
@@ -585,6 +603,7 @@ class Master extends BaseController
 
 			// Build pager HTML (we’re not using Model::paginate())
 			$data = [
+				'silents' => $silents,
 				'carr' => $carr,
 				'deact' => $deact,
 				'members'    => $members,
@@ -724,6 +743,52 @@ class Master extends BaseController
 			echo view('status/status_view', $data);
 			echo view('template/footer');
 		}
+	}	
+	public function set_silent(int $id = null) {
+		if($this->check_master()) {
+			$param['id'] = $id;
+			$param['silent_date'] =  time();
+			$param['usr_type'] = 98;
+			$param['silent_year'] = date('Y', $param['silent_date']);
+			$this->staff_mod->set_silent($param);
+			echo 'done';
+			$this->show_members();
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
 	}
-	
+
+	public function load_silent(int $id = null) {
+		if($this->check_master()) {
+			$param['silent_date'] = strtotime($this->request->getPost('silent_date'));
+			$param['silent_year'] = date('Y', $param['silent_date']);
+			$param['id'] = $id;
+			$this->staff_mod->set_silent($param);
+			$this->show_members();
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+		}
+	}
+	public function unset_silent(int $id = null) {
+		if($this->check_master()) {
+			$this->staff_mod->unset_silent($id);
+			$this->show_members();
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+	}
 }

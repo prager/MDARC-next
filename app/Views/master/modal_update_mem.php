@@ -154,10 +154,10 @@
                 foreach($states as $state) {
                 if(esc($m['state']) != 'N/A') {
                   if($state == esc($m['state'])) {?>
-                  <option selected value="<?php echo key($states); ?>"><?php echo $state; ?></option>
+                  <option selected value="<?php echo $state; ?>"><?php echo $state; ?></option>
                 <?php }
                   else { ?>
-                  <option value="<?php echo key($states); ?>"><?php echo $state; ?></option>
+                  <option value="<?php echo $state; ?>"><?php echo $state; ?></option>
                 <?php
                     }
                 next($states);
@@ -180,11 +180,10 @@
         </div>
         <div class="row mb-3">
           <div class="col py-1">
-            <?php if(esc($m['silent_date']) == 0) { ?>
-              <button type="button" class="btn btn-light btn-sm"><?php echo anchor('set-silent-key/' . esc($m['id_members']), 'Set Silent Key', 'class="text-decoration-none text-dark"')?></button>
+            <?php if($m['silent_date'] == 0) { ?>
+              <button type="button" class="btn btn-light btn-sm"><?php echo anchor('set-silent-key/' . $m['id_members'], 'Set Silent Key', 'class="text-decoration-none text-dark"')?></button>
           <?php } else {?>
-            <p style="color: red">Silent Key on: <?= esc($m['silent_date']) ?>
-            <?php }?>
+            <p style="color: red">Silent Key on: <?php echo date('m/d/Y', $m['silent_date']); }?>
           </div>
         </div>
       </section>

@@ -315,4 +315,29 @@ public function get_new_mems($from, $to) {
     $builder->resetQuery();
     $builder->update(array('cur_year' => date('Y', time())), ['parent_primary' => $id]);
   }
+
+  /**
+  * Set silent key if the member passed
+  */
+  public function set_silent($param) {
+    $db      = \Config\Database::connect();
+    $builder = $db->table('tMembers');
+    $id = $param['id'];
+    unset($param['id']);
+    $builder->resetQuery();
+    $builder->update($param, ['id_members' => $id]);
+    $db->close();
+  }
+
+  /**
+* Unset silent key in case of mistake was made
+*/
+public function unset_silent($id) {
+  $db      = \Config\Database::connect();
+  $builder = $db->table('tMembers');
+  $builder->resetQuery();
+  $builder->update(array('usr_type' => 0, 'silent_date' => 0,
+  'silent_year' => 0), ['id_members' => $id]);
+  $db->close();
+}
 }

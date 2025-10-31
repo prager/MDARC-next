@@ -5,19 +5,22 @@
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab">Listed in DB</button>
+          <button class="nav-link active" id="cur-mems-tab" data-bs-toggle="tab" data-bs-target="#cur-mems" type="button" role="tab">Listed in DB</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab">Deactivated</button>
+          <button class="nav-link" id="deactivated-mems-tab" data-bs-toggle="tab" data-bs-target="#deactivated-mems" type="button" role="tab">Deactivated</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab">Mailing The Carrier</button>
+          <button class="nav-link" id="carrier-tab" data-bs-toggle="tab" data-bs-target="#carrier" type="button" role="tab">Mailing The Carrier</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="silents-tab" data-bs-toggle="tab" data-bs-target="#silents" type="button" role="tab">Silent Keys</button>
         </li>
       </ul>
 
       <!-- Tab content -->
       <div class="tab-content mt-3">
-        <div class="tab-pane fade show active" id="home" role="tabpanel">
+        <div class="tab-pane fade show active" id="cur-mems" role="tabpanel">
 
           <!-- Put the main members here -->
           <div class="row">
@@ -127,7 +130,7 @@
 
           <!-- End of first tab -->
         </div>
-        <div class="tab-pane fade mb-3" id="profile" role="tabpanel">
+        <div class="tab-pane fade mb-3" id="deactivated-mems" role="tabpanel">
            <!-- Start of second tab -->
            <div class="card shadow-sm">
             <div class="card-body p-0">
@@ -173,7 +176,7 @@
           </div>        
            <!-- End of second tab -->
         </div>
-        <div class="tab-pane fade mb-3" id="contact" role="tabpanel">          
+        <div class="tab-pane fade mb-3" id="carrier" role="tabpanel">          
           <!-- Start of third tab -->
           <div class="card shadow-sm">
             <div class="card-body p-0">
@@ -212,7 +215,45 @@
             </div>                             
           </div>  
           <!-- End of third tab -->
-
+        </div>
+        <div class="tab-pane fade mb-3" id="silents" role="tabpanel">
+          <!-- Start of third tab -->
+          <div class="card shadow-sm">
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-sm table-striped align-middle mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Name</th>
+                      <th>Callsign</th>
+                      <th>Last Payment</th>
+                      <th>Last Member Year</th>
+                      <th>Silent Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  <?php if (!empty($silents)): ?>
+                    <?php foreach ($silents as $s): ?>
+                      <tr>
+                        <td>
+                        <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#editSilent<?php echo $s['id_members']; ?>"><?php echo $s['lname'] . ', ' . $s['fname']; ?></a>
+                        </td>
+                        <?php include 'modal_edit_silent.php'; ?>
+                        <td><?= esc($s['callsign'] ?? '') ?></td>
+                        <td><?php echo date('m/d/Y', $s['paym_date']); ?></td>
+                        <td><?php echo $s['cur_year']; ?></td>
+                        <td><?php echo date('m/d/Y', $s['silent_date']); ?></td>
+                      </tr>
+                    <?php endforeach; ?>
+                  <?php else: ?>
+                    <tr><td colspan="5" class="text-center py-4 text-muted">No rows to display.</td></tr>
+                  <?php endif; ?>
+                  </tbody>
+                </table>
+              </div>
+            </div>                             
+          </div>  
+          <!-- End of third tab -->
         </div>
       </div>
     </div>
