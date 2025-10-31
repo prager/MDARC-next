@@ -309,7 +309,21 @@ class Master extends BaseController
 			echo view('template/header_master');
 			$data['states'] = $this->data_mod->get_states_array();
 			$data['lic'] = $this->data_mod->get_lic();
-			$data['mem_types'] = $this->master_mod->get_member_types();
+
+			$db    = \Config\Database::connect();
+			// Call stored procedure directly
+			$query = $db->query('CALL Get_Mem_Types()');
+			$types = $query->getResultArray();
+	
+			// IMPORTANT: free the result set to avoid "commands out of sync"
+			$query->freeResult();
+			while ($db->connID->more_results() && $db->connID->next_result()) {
+				if ($extra = $db->connID->store_result()) {
+					$extra->free();
+				}
+			}
+			$this->flushMultiResults($db);
+			$data['mem_types'] = $types;
 			echo view('master/add_mem_view', $data);
 		}
 		else {

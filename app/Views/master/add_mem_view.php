@@ -37,19 +37,16 @@
         </select>
       </div>
       <div class="col-lg-4">
-        <label for="sel_lic">Member Type</label>
-        <select class="form-select" name="mem_types">
-          <?php
-            foreach($mem_types as $type) {
-              if($type['id'] == 1) {?>
-                <option value="<?php echo $type['id']; ?>" selected><?php echo $type['description']; ?></option>
-              <?php }
-              elseif($type['id'] == 5) { ?>
-                <option value="<?php echo $type['id']; ?>"><?php echo $type['description']; ?></option>
-          <?php  }
-            }
-          ?>
-        </select>
+      <label for="id_mem_types">Member Type </label>
+            <select id="id_mem_types" name="id_mem_types" class="form-select" required>
+              <option value="" disabled>-- Choose a Membership Type --</option>
+              <?php foreach ($mem_types as $t): ?>
+                <option value="<?= esc($t['id_mem_types']) ?>"
+                  <?= isset($m['id_mem_types']) && $m['id_mem_types'] == $t['id_mem_types'] ? 'selected' : '' ?>>
+                  <?= esc($t['description']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
       </div>
     </div>
     <div class="row mt-3">

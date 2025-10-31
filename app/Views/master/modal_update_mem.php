@@ -39,7 +39,7 @@
             </select>
           </div>
           <div class="col-lg-6 py-2">
-            <label for="memType">Member Type </label>
+            <label for="id_mem_types">Member Type </label>
             <select id="id_mem_types" name="id_mem_types" class="form-select" required>
               <option value="" disabled>-- Choose a Membership Type --</option>
               <?php foreach ($types as $t): ?>
