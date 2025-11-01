@@ -1,7 +1,7 @@
 <div class="modal fade" id="manPayment<?= esc($m['id_members']) ?>" tabindex="-1" aria-labelledby="manPaymentLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-    <form action="<?php echo base_url() . '/index.php/man-payment/'. esc($m['id_members']); ?>" method="post">
+    <form action="<?php echo base_url() . 'index.php/man-payment/'. esc($m['id_members']); ?>" method="post">
       <div class="modal-header">
         <h5 id="manPayment<?= esc($m['id_members']) ?>Label" class="modal-title">Process Manual Payment</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

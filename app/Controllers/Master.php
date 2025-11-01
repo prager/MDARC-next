@@ -805,4 +805,39 @@ class Master extends BaseController
 			echo view('template/footer');
 		}
 	}
+	public function man_payment(int $id = null) {
+		if($this->check_master()) {
+			echo view('template/header_master');
+			$param = array();
+
+			$param['id_member'] = $id;
+			$param['amount'] = $this->request->getPost('amount');
+			$param['donation'] = $this->request->getPost('donation');
+			$param['don_rep'] = $this->request->getPost('don_rep');
+			$param['paydate'] = $this->request->getPost('pay_date');
+			$param['carrier'] = $this->request->getPost('carrier');
+			
+			$status = $this->admin_mod->man_payment($param);
+			if($status) {
+				$data['title'] = 'Manual Payment';
+				$data['msg'] = 'Manual payment was successfuly processed for ID member: ' . $param['id_member'] . '<br><br>';
+				echo view('status/status_view', $data);
+			}
+			else {
+				$data['title'] = 'Manual Payment - Error!';
+				$data['msg'] = 'There was an error while processing the transaction. Go back to home page ' . anchor(base_url(), 'here') .
+				 ' to go to home page<br><br>';
+				echo view('status/status_view', $data);
+			}
+
+		}
+		else {
+			echo view('template/header');
+			 $data['title'] = 'Login Error';
+			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			 echo view('status/status_view', $data);
+		}
+		echo view('template/footer');
+	}
 }

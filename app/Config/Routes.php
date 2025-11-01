@@ -19,6 +19,7 @@ $routes->post('master/add-fam/(:num)', 'Master::add_fam_mem/$1');
 $routes->post('edit-mem/(:num)', 'Master::edit_mem/$1');
 $routes->post('edit-mem', 'Master::edit_mem');
 $routes->post('load-silent/(:num)', 'Master::load_silent/$1');
+$routes->post('man-payment/(:num)', 'Master::man_payment/$1');
 
 $routes->get('delete-faq/(:num)', 'Master::delete_faq/$1');
 $routes->get('edit-users', 'Master::edit_users');
