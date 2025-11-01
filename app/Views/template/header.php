@@ -41,10 +41,10 @@
                   About
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="helpMenu">
-                  <li class="nav-link"><a ><a href="<?php echo base_url() . 'index.php/contact'; ?>" class="dropdown-item"> &nbsp; Contact</a></li>
+                  <!-- <li class="nav-link"><a ><a href="<?php echo base_url() . 'index.php/contact'; ?>" class="dropdown-item"> &nbsp; Contact</a></li> -->
                   <!-- <li><hr class="dropdown-divider"></li>
                   <li class="nav-link"><a ><a href="<?php echo base_url() . 'index.php/faqs'; ?>" class="dropdown-item"> &nbsp; FAQs</a></li>                                     -->
-                  <li><hr class="dropdown-divider">
+                  <!-- <li><hr class="dropdown-divider"> -->
                 </li><li class="nav-link"><a ><a href="<?php echo base_url() . 'index.php/terms'; ?>" class="dropdown-item"> &nbsp; Terms of Service</a></li>
                 </ul>
               </li>

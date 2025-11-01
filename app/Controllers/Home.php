@@ -40,4 +40,9 @@ class Home extends BaseController
         echo view('public/faqs_view', $data);
         echo view('template/footer');
       }
+
+  public function terms() {
+	echo view('public/terms');
+  }
 }
+

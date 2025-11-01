@@ -41,6 +41,7 @@ $routes->get('unset-silent-key/(:num)', 'Master::unset_silent/$1');
 
 $routes->get('members', 'Master::show_members');
 $routes->get('all-members', 'Master::show_all_members');
+$routes->get('terms', 'Home::terms');
 
 $routes->get('members/parent/(:num)',   'Master::parent/$1');
 $routes->get('members/children/(:num)', 'Master::children/$1');
