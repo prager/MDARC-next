@@ -26,7 +26,7 @@
           <div class="row">
             <div class="col-lg-4">
                 <?php if($forYear != 0 && $forYear != 99) { ?>
-                    <h4 class="mb-1">Current Members</h4>
+                  <a href="<?php echo base_url() . 'index.php/members'; ?>" class="text-decoration-none"><h4 class="mb-1 text-warning">Current Members</h4></a>
                     <p> Total of <?php echo $numMems; ?> members. Click for <a href="<?php echo base_url() . 'index.php/all-members'; ?>" class="text-decoration-none">All Members</a></p>
                 <?php } else { ?>
                     <h4 class="mb-1">All Members</h4>

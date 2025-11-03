@@ -101,7 +101,7 @@
             <td>${r.email ?? ''}</td>
             <td>${r.license ?? ''}</td>
             <td>${fmtDate(r.mem_since)}</td>
-            <td>${fmtDate(r.pay_date)}</td>
+            <td class="text-center"><a href="<?= site_url('master/rem-fam') ?>"><i class="bi bi-trash"></i></a></td>
           </tr>
         `).join('');
       }

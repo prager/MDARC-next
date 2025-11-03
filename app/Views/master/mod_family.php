@@ -20,13 +20,13 @@
                 </div>
 
                 <h6 class="mt-3">Family Members</h6>
-                <div id="childrenEmpty" class="alert alert-warning d-none mb-2">No child members found.</div>
+                <div id="childrenEmpty" class="alert alert-warning d-none mb-2">No family members found.</div>
                 <div class="table-responsive">
                 <table class="table table-sm table-striped mb-0">
                     <thead class="table-light">
                     <tr>
                         <th>ID</th><th>Name</th><th>Callsign</th><th>Email</th>
-                        <th>License</th><th>Member Since</th><th>Pay Date</th>
+                        <th>License</th><th>Mem Since</th><th>Remove</th>
                     </tr>
                     </thead>
                     <tbody id="childrenBody"></tbody>

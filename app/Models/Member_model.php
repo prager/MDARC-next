@@ -150,4 +150,11 @@ class Member_model extends Model {
 
         return $rows;
     }
+
+    public function remove_fam_mem($id) {
+      $db      = \Config\Database::connect();
+      $builder = $db->table('tMembers');
+      $param = array('id_mem_types' => 1, 'mem_type' => 'Individual', 'parent_primary' => 0, 'cur_year' => 99);
+      $builder->update($param, ['id_members' => $id]);
+    }
 }
