@@ -42,6 +42,9 @@ $routes->get('unset-silent-key/(:num)', 'Master::unset_silent/$1');
 $routes->get('members', 'Master::show_members');
 $routes->get('all-members', 'Master::show_all_members');
 $routes->get('terms', 'Home::terms');
+$routes->get('export-all-mems', 'Master::export_all_mems');
+$routes->get('export-cur-emails', 'Master::export_cur_emails');
+$routes->get('export-due-emails', 'Master::export_due_emails');
 
 $routes->get('members/parent/(:num)',   'Master::parent/$1');
 $routes->get('members/children/(:num)', 'Master::children/$1');

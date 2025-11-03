@@ -840,4 +840,100 @@ class Master extends BaseController
 		}
 		echo view('template/footer');
 	}
+
+	public function export_all_mems(): \CodeIgniter\HTTP\ResponseInterface
+    {
+        if($this->check_master()) {
+			$rows  = $this->mem_mod->getAllMemData();
+
+			$filename = 'members_' . date('Y-m-d_H-i') . '.csv';
+
+			// Build CSV into a temp stream, then return it as the response body.
+			$fp = fopen('php://temp', 'r+');
+
+			// Optional: UTF-8 BOM for Excel compatibility
+			fwrite($fp, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+			if (! empty($rows)) {
+				// Header row from array keys
+				fputcsv($fp, array_keys($rows[0]));
+				// Data rows
+				foreach ($rows as $row) {
+					fputcsv($fp, $row);
+				}
+			} else {
+				fputcsv($fp, ['No data']);
+			}
+
+			rewind($fp);
+			$csv = stream_get_contents($fp);
+			fclose($fp);
+
+			return $this->response
+				->setHeader('Content-Type', 'text/csv')
+				->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+				->setHeader('Pragma', 'no-cache')
+				->setHeader('Expires', '0')
+				->setBody($csv);
+		}
+		else {
+			echo view('template/header');
+			 $data['title'] = 'Login Error';
+			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			 echo view('status/status_view', $data);
+			 echo view('template/footer');
+		}
+    }	
+	
+	public function export_cur_emails() {
+		if($this->check_master()) {
+			$rows = $this->mem_mod->getCurEmails();
+
+			$filename = 'cur-emails.txt';
+
+			// Build text: one email per line
+			$emails = array_map(fn($r) => $r['email'], $rows);
+			$txt = implode(',', $emails);
+
+			return $this->response
+				->setHeader('Content-Type', 'text/plain')
+				->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+				->setBody($txt);
+		}
+		else {
+			echo view('template/header');
+			 $data['title'] = 'Login Error';
+			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			 echo view('status/status_view', $data);
+			 echo view('template/footer');
+		}
+    }
+
+	public function export_due_emails()
+    {
+        if($this->check_master()) {
+			$rows  = $this->mem_mod->getDueEmails();
+
+			$filename = 'due-emails.txt';
+
+			// Convert to simple text list
+			$emails = array_map(fn($r) => $r['email'], $rows);
+			$content = implode(',', $emails);
+
+			return $this->response
+				->setHeader('Content-Type', 'text/plain')
+				->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+				->setBody($content);
+		}
+		else {
+			echo view('template/header');
+			 $data['title'] = 'Login Error';
+			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			 echo view('status/status_view', $data);
+			 echo view('template/footer');
+		}
+    }
 }

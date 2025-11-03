@@ -99,4 +99,55 @@ class Member_model extends Model {
 
     return $retarr;
   }
+
+  /**
+     * Returns all member rows (joined to tMemTypes) via stored procedure.
+     */
+    public function getAllMemData(): array {
+        $db = \Config\Database::connect($this->DBGroup);
+
+        // Call the stored procedure
+        $query = $db->query('CALL GetAllMemData()');
+
+        $rows = $query->getResultArray();
+
+        // Free the result so additional queries won't fail on this connection.
+        $query->freeResult();
+
+        // (MySQLi) Make sure to flush any remaining result sets from CALL
+        // so you can run another query on the same connection later.
+        if (method_exists($db->connID, 'more_results')) {
+            while ($db->connID->more_results() && $db->connID->next_result()) { /* flush */ }
+        }
+
+        return $rows;
+    }
+    public function getCurEmails(): array
+    {
+        $db = \Config\Database::connect($this->DBGroup);
+        $query = $db->query('CALL GetCurEmails()');
+        $rows = $query->getResultArray();
+
+        // Free results so we can run more queries later
+        $query->freeResult();
+        if (method_exists($db->connID, 'more_results')) {
+            while ($db->connID->more_results() && $db->connID->next_result()) {}
+        }
+
+        return $rows;
+    }
+    public function getDueEmails(): array
+    {
+        $db = \Config\Database::connect($this->DBGroup);
+        $query = $db->query('CALL GetDueEmails()');
+        $rows = $query->getResultArray();
+
+        // clean up connection
+        $query->freeResult();
+        if (method_exists($db->connID, 'more_results')) {
+            while ($db->connID->more_results() && $db->connID->next_result()) {}
+        }
+
+        return $rows;
+    }
 }

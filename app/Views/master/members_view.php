@@ -24,15 +24,22 @@
 
           <!-- Put the main members here -->
           <div class="row">
-            <div class="col">
+            <div class="col-lg-4">
                 <?php if($forYear != 0 && $forYear != 99) { ?>
-                    <h4 class="mb-3">Current Members</h4>
+                    <h4 class="mb-1">Current Members</h4>
                     <p> Total of <?php echo $numMems; ?> members. Click for <a href="<?php echo base_url() . 'index.php/all-members'; ?>" class="text-decoration-none">All Members</a></p>
                 <?php } else { ?>
-                    <h4 class="mb-3">All Members</h4>
+                    <h4 class="mb-1">All Members</h4>
                     <p>Total of <?php echo $numMems; ?> members. Click for <a href="<?php echo base_url() . 'index.php/members'; ?>" class="text-decoration-none">Current Members</a> only</p>
                 <?php } ?>
+            </div>
+            <div class="col-lg-6 justify-content-start">
+              <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+                <a href="<?php echo base_url() . 'index.php/export-all-mems'; ?>" class="btn btn-outline-secondary">Export CSV All Members</a>
+                <a href="<?php echo base_url() . 'index.php/export-cur-emails'; ?>" class="btn btn-outline-secondary">Export Current Emails</a>
+                <a href="<?php echo base_url() . 'index.php/export-due-emails'; ?>" class="btn btn-outline-secondary">Export Due Emails</a>
               </div>
+            </div>
           </div>
           <div class="row">
             <div class="col">
