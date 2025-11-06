@@ -81,12 +81,20 @@
       document.getElementById('p-lname').textContent = d.lname ?? '';
       document.getElementById('p-email').textContent = d.email ?? '';
 
-      // Update hidden field and form action with parent ID
+      // Update hidden field and form action with parent ID for new family member
       const formEl = document.getElementById('parentForm');
       const hiddenInput = document.getElementById('parent_id_input');
       if (formEl && hiddenInput) {
         hiddenInput.value = d.id_members ?? '';
         formEl.action = '<?= site_url('master/add-fam') ?>/' + encodeURIComponent(d.id_members ?? '');
+      }
+
+      // Update hidden field and form action with parent ID for an existing member to become a family member
+      const hiddenParent = document.getElementById('par_id_input');
+      const formExistingFam = document.getElementById('existingMemForm');
+      if (formExistingFam && hiddenParent) {
+        hiddenParent.value = d.id_members ?? '';
+        formExistingFam.action = '<?= site_url('master/add-fam-existing') ?>/' + encodeURIComponent(d.id_members ?? '');
       }
 
       const kids = Array.isArray(kidsJson.children) ? kidsJson.children : [];
@@ -101,7 +109,13 @@
             <td>${r.email ?? ''}</td>
             <td>${r.license ?? ''}</td>
             <td>${fmtDate(r.mem_since)}</td>
-            <td class="text-center"><a href="<?= site_url('master/rem-fam') ?>"><i class="bi bi-trash"></i></a></td>
+            <td class="text-center">
+              <a href="<?= site_url('master/rem-fam/') ?>${r.id_members}"
+                data-bs-toggle="tooltip"
+                title="Member will be deactivated under the 'Deactivated' tab">
+                <i class="bi bi-trash"></i>
+              </a>
+            </td>
           </tr>
         `).join('');
       }

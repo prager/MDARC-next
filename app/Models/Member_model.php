@@ -52,8 +52,17 @@ class Member_model extends Model {
         }
         return $retval;
       }
+    
+      public function add_fam_existing($param) {
+        $db      = \Config\Database::connect();
+        $builder = $db->table('tMembers');
+        $id = $param['id_members'];
+        unset($param['id_members']);
+        $builder->update($param, ['id_members' => $id]);
+        $builder->resetQuery();
+      }  
 
-      /**
+  /**
   * Checks for duplicate family member and callsign
   * If return is true then there is a duplicate
   */

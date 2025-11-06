@@ -709,7 +709,24 @@ class Master extends BaseController
 			else {
 				$data['title'] = 'Database Error';
 				$data['msg'] = $retstat['err'];
+				echo view('status/status_view.php', $data);
 			}
+		}
+		else {
+			echo view('template/header');
+			$this->login_mod->logout();
+			$data['title'] = 'Login Error';
+			$data['msg'] = 'There was an error while checking your credentials.<br><br>';
+			echo view('status/status_view.php', $data);
+		}
+	}
+	public function add_fam_existing(int $id = null) {
+		if($this->check_master()) {
+			$param['parent_primary'] = $id;
+			$param['id_members'] = $this->request->getPost('id_existing_mem');
+			$param['id_mem_types'] = $this->request->getPost('id_mem_type');
+			$this->mem_mod->add_fam_existing($param);
+			$this->show_members();
 		}
 		else {
 			echo view('template/header');
@@ -936,4 +953,18 @@ class Master extends BaseController
 			 echo view('template/footer');
 		}
     }
+	public function remove_fam_mem(int $id) {
+		if($this->check_master()) {
+			$this->mem_mod->remove_fam_mem($id);
+			$this->show_members();
+		}
+		else {
+			echo view('template/header');
+			 $data['title'] = 'Login Error';
+			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			 echo view('status/status_view', $data);
+			 echo view('template/footer');
+		}
+	}
 }

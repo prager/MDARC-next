@@ -15,8 +15,8 @@
             <div id="parent-data" class="d-none">
                 <div class="row g-2 mb-3">
                 <div class="col-sm-2"><strong>ID:</strong> <span id="p-id"></span></div>
-                <div class="col-sm-3"><strong>Name:</strong> <span id="p-fname"></span>  <span id="p-lname"></span></div>
-                <div class="col-sm-4"><strong>Email:</strong> <span id="p-email"></span></div>
+                <div class="col-sm-4"><strong>Name:</strong> <span id="p-fname"></span>  <span id="p-lname"></span></div>
+                <div class="col-sm-5"><strong>Email:</strong> <span id="p-email"></span></div>
                 </div>
 
                 <h6 class="mt-3">Family Members</h6>
@@ -33,13 +33,32 @@
                 </table>
                 </div>
             </div>
+            <form id="existingMemForm" method="post" action="">
+            <input type="hidden" id="par_id_input" name="par_id_input" value="">
+                <div class="row my-3">
+                    <div class="col-lg-4">
+                        <label for="id_existing_mem" class="form-label">Add a Family Member</label>
+                        <input class="form-control" id="id_existing_mem" name="id_existing_mem" type="text" placeholder="ID Members" aria-label="Existing ID Members">
+                    </div>
+                    <div class="col-lg-4 d-flex flex-column d-grid">
+                        <label for="id_mem_type">Member Type</label>
+                        <select id="id_mem_type" name="id_mem_type" class="form-select mt-auto" required>
+                            <option value="3" selected>Spouse</option>
+                            <option value="4">Additional</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-3 d-flex flex-column d-grid">
+                        <button type="submit" class="btn btn-outline-secondary mt-auto">Submit</button>
+                    </div>
+                </div>
+            </form>
             <div class="row mt-3">
             <div class="col">
                 <div class="accordion" id="accAddFam">
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        Click to Add a Family Member
+                        Click to Add a New Family Member
                     </button>
                     </h2>
                     <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accAddFam">
@@ -77,22 +96,22 @@
                         </div>
                         <div class="row">
                             <div class="col-lg-6 py-1">
-                            <label for="sel_lic">License Type</label>
-                            <select class="form-select" name="sel_lic">
-                                <?php
-                                foreach($lic as $license) {
-                                    if($license == 'Technician') { ?>
-                                    <option value="<?php echo $license; ?>" selected><?php echo $license; ?></option>
-                                <?php    }
-                                    else { ?>
-                                    <option value="<?php echo $license; ?>"><?php echo $license; ?></option>
-                                <?php }
-                                }
-                                ?>
-                            </select>
+                                <label for="sel_lic">License Type</label>
+                                <select class="form-select" name="sel_lic">
+                                    <?php
+                                    foreach($lic as $license) {
+                                        if($license == 'Technician') { ?>
+                                        <option value="<?php echo $license; ?>" selected><?php echo $license; ?></option>
+                                    <?php    }
+                                        else { ?>
+                                        <option value="<?php echo $license; ?>"><?php echo $license; ?></option>
+                                    <?php }
+                                    }
+                                    ?>
+                                </select>
                             </div>
                             <div class="col-lg-6 py-1">
-                            <label for="sel_lic">Member Type</label>
+                            <label for="id_mem_types">Member Type</label>
                             <select id="id_mem_types" name="id_mem_types" class="form-select" required>
                                 <option value="3" selected>Spouse</option>
                                 <option value="4">Additional</option>

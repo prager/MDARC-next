@@ -16,6 +16,7 @@ $routes->post('load-admin/(:num)', 'Master::load_admin/$1');
 $routes->post('reset-user/(:num)', 'Master::reset_user/$1');
 $routes->post('master-search', 'Master::search');
 $routes->post('master/add-fam/(:num)', 'Master::add_fam_mem/$1');
+$routes->post('master/add-fam-existing/(:num)', 'Master::add_fam_existing/$1');
 $routes->post('edit-mem/(:num)', 'Master::edit_mem/$1');
 $routes->post('edit-mem', 'Master::edit_mem');
 $routes->post('load-silent/(:num)', 'Master::load_silent/$1');
@@ -38,6 +39,7 @@ $routes->get('purge-mem/(:num)', 'Master::purge_mem/$1');
 $routes->get('un-delete-mem/(:num)', 'Master::un_delete_mem/$1');
 $routes->get('set-silent-key/(:num)', 'Master::set_silent/$1');
 $routes->get('unset-silent-key/(:num)', 'Master::unset_silent/$1');
+$routes->get('master/rem-fam/(:num)', 'Master::remove_fam_mem/$1');
 
 $routes->get('members', 'Master::show_members');
 $routes->get('all-members', 'Master::show_all_members');

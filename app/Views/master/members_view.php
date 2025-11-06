@@ -54,6 +54,7 @@
                             function nextDir($cur) { return $cur === 'ASC' ? 'DESC' : 'ASC'; }
 
                             $columns = [
+                                'id_members'  => 'Mem ID',
                                 'lname'  => 'Name',
                                 'email'      => 'Email',
                                 'callsign'      => 'Callsign',
@@ -88,6 +89,7 @@
                         <tbody>
                         <?php foreach ($members as $m): ?>
                           <tr>
+                            <td><?= esc($m['id_members'] ?? '') ?></td>
                             <td><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#editMem<?= esc($m['id_members']) ?>"><?= esc($m['lname'] ?? '') . ', ' .  esc($m['fname'] ?? '') ?></a>
                           </td>
                           <?php include 'modal_update_mem.php'; ?>
