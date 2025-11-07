@@ -11,7 +11,9 @@
       <div class="col-lg-6">
         <!-- <h1>MDARC <span class="text-warning">Memberships</span> - <a href="<?php echo base_url() . '/index.php/add-mem/new-member'; ?>" class="text-decoration-none">Join Us</a>  </h1> -->
         <h1>MDARC <span class="text-warning">Memberships</span> - <a href="https://www.mdarc.org/about-us/joinrenewupdate" class="text-decoration-none" target="_blank">Join Us</a>  </h1>
+        <?php if(ENVIRONMENT === 'development') { ?>
         <p class="mt-xs-5"><small><span class="fw-bold text-danger">This is a Membership Portal for MDARC members - dev version!</span> For more info click <a href="<?php echo base_url(); ?>/index.php/faqs" class="text-decoration-none">here</a></small></p>
+        <?php } ?>
           <form action="<?php echo base_url() . 'index.php/login' ?>" method="post">
             <div class="col-lg-10 mb-3">
                 <label for="user" class="form-label">Username</label>

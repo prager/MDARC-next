@@ -12,6 +12,7 @@ class Master extends BaseController
         if($this->check_master()) {
             echo view('template/header_master.php');
             echo view('master/master_view.php');
+			echo view('template/footer_master');
         }
         else {
             $this->login_mod->logout();
@@ -19,8 +20,9 @@ class Master extends BaseController
             $data['title'] = 'Login Error';
             $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') . ' to reset your password <br><br>';
             echo view('status/status_view', $data);
+			echo view('template/footer');
         }
-            echo view('template/footer');
+            
     }
     /**
     * Checks for master user according to the type code
@@ -39,6 +41,7 @@ class Master extends BaseController
 			$data = $this->staff_mod->get_faqs();
 			$data['msg'] = '';
 			echo view('master/faqs_view', $data);
+			echo view('template/footer_master');
 		}
 		else {
 			echo view('template/header');
@@ -46,8 +49,9 @@ class Master extends BaseController
 			$data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
 			' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
 			echo view('status/status_view', $data);
+			echo view('template/footer');
 		}
-		echo view('template/footer');
+		
 	}
 
     public function edit_faq($id = null) {
@@ -62,6 +66,7 @@ class Master extends BaseController
 			$data = $this->staff_mod->get_faqs();
 			$data['msg'] = '<p class="text-danger"> Record updated!</p>';
 			echo view('master/faqs_view', $data);
+			echo view('template/footer_master');
 		}
 		else {
 			echo view('template/header');
@@ -69,8 +74,8 @@ class Master extends BaseController
 			$data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
 			' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
 			echo view('status/status_view', $data);
+			echo view('template/footer');
 		}
-		echo view('template/footer');
 	}
 	public function delete_faq($id = null) {
 		if($this->check_master()) {
@@ -79,6 +84,7 @@ class Master extends BaseController
 			$data = $this->staff_mod->get_faqs();
 			$data['msg'] = '<p class="text-danger"> Record updated!</p>';
 			echo view('master/faqs_view', $data);
+			echo view('template/footer_master');
 		}
 		else {
 			echo view('template/header');
@@ -86,8 +92,8 @@ class Master extends BaseController
 			$data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
 			' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
 			echo view('status/status_view', $data);
+			echo view('template/footer');
 		}
-		echo view('template/footer');
 	}
 	/**
 	* Enables master user edit users
@@ -102,14 +108,15 @@ class Master extends BaseController
 			$data['msg'] = '';
 			$data['errmsg'] = '';
 			echo view('master/edit_users_view', $data);
+			echo view('template/footer_master');
 		}
 		else {
 			$data['title'] = 'Login Error';
 			$data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
 			' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
 			echo view('status/status_view', $data);
+			echo view('template/footer');
 		}
-		echo view('template/footer');
 	}
 
 	/**
@@ -139,6 +146,7 @@ class Master extends BaseController
 			$data['msg'] = 'Updated user. Thank you!';
 			$data['errmsg'] = NULL;
 			echo view('master/edit_users_view', $data);
+			echo view('template/footer_master');
 		}
 		else {
 				echo view('template/header');
@@ -146,8 +154,8 @@ class Master extends BaseController
  				 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
  				 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
  				 echo view('status/status_view', $data);
+				  echo view('template/footer_master');
 		}
-		echo view('template/footer');
 	}
 	public function reset_user($id = null) {
 		if($this->check_master()) {
@@ -172,6 +180,7 @@ class Master extends BaseController
 					if(!($flags['pass_comp'])) $data['errmsg'] .= '<p style="color:red;">Password complexity requirement not met</p>';
 					echo view('master/edit_users_view', $data);
 				}
+				echo view('template/footer_master');
 		}
 		else {
 			echo view('template/header');
@@ -179,8 +188,8 @@ class Master extends BaseController
 			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
 			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
 			 echo view('status/status_view', $data);
+			 echo view('template/footer');
 		}
-		echo view('template/footer');
 	}
 	public function activate($id = null) {
 		if($this->check_master()) {
@@ -191,6 +200,7 @@ class Master extends BaseController
 			 $data['msg'] = 'Activated / deactivated user. Thank you!';
 			 $data['errmsg'] = NULL;
 	 		 echo view('master/edit_users_view', $data);
+			 echo view('template/footer_master');
 		}
 		else {
 			echo view('template/header');
@@ -198,8 +208,8 @@ class Master extends BaseController
 			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
 			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
 			 echo view('status/status_view', $data);
+			 echo view('template/footer');
 		}
-		echo view('template/footer');
 	}
 	public function authorize($id = null) {
 		if($this->check_master()) {
@@ -210,6 +220,7 @@ class Master extends BaseController
 			 $data['msg'] = 'Authorized / Unauthorized user. Thank you!';
 			 $data['errmsg'] = NULL;
 	 		 echo view('master/edit_users_view', $data);
+			  echo view('template/footer_master');
 		}
 		else {
 			echo view('template/header');
@@ -217,10 +228,9 @@ class Master extends BaseController
 			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
 			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
 			 echo view('status/status_view', $data);
+			 echo view('template/footer');
 		}
-		echo view('template/footer');
 	}
-
 	public function search() {
 		if($this->check_master()) {
 			echo view('template/header_master.php');
@@ -294,6 +304,7 @@ class Master extends BaseController
 			);
 
 			echo view('master/search_res_view.php', $data);
+			echo view('template/footer_master');
 	   }
 		else {
 			echo view('template/header');
@@ -301,8 +312,8 @@ class Master extends BaseController
 			$data['title'] = 'Login Error';
 			$data['msg'] = 'There was an error while checking your credentials.<br><br>';
 			echo view('status/status_view.php', $data);
+			echo view('template/footer');
 		}
-		echo view('template/footer.php');
 	}
 	public function add_mem() {
 		if($this->check_master()) {
@@ -325,6 +336,7 @@ class Master extends BaseController
 			$this->flushMultiResults($db);
 			$data['mem_types'] = $types;
 			echo view('master/add_mem_view', $data);
+			echo view('template/footer_master');
 		}
 		else {
 			echo view('template/header');
@@ -332,8 +344,8 @@ class Master extends BaseController
 			$data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
 			' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
 			echo view('status/status_view', $data);
+			echo view('template/footer_master');
 		}
-		echo view('template/footer');
 	}
 	
 	public function edit_mem($id = null) {
@@ -375,12 +387,14 @@ class Master extends BaseController
 				$data['msg'] .= 'Go back to ' . anchor('members', 'members listing');
 				echo view('status/status_view', $data);
 			}
+			echo view('template/footer_master');
 		}
 		else {
 			echo view('template/header');
 			$data['title'] = 'Authorization Error';
 			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
 			echo view('status/status_view', $data);
+			echo view('template/footer');
 		}
 	}
 	private function flushMultiResults($db): void
@@ -512,13 +526,14 @@ class Master extends BaseController
 
 
 			echo view('master/members_view', $data);
-			echo view('template/footer');
+			echo view('template/footer_master');
 		}
 		else {
 			echo view('template/header');
 			$data['title'] = 'Authorization Error';
 			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
 			echo view('status/status_view', $data);
+			echo view('template/footer');
 		}
 	}
 
@@ -635,57 +650,76 @@ class Master extends BaseController
 			];
 
 			echo view('master/members_view', $data);
-			echo view('template/footer');
+			echo view('template/footer_master');
 		}
 		else {
 			echo view('template/header');
 			$data['title'] = 'Authorization Error';
 			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
 			echo view('status/status_view', $data);
+			echo view('template/footer');
 		}
 	}
 
 	public function parent(int $id = null) {
-		$db  = \Config\Database::connect();
-        $res = $db->query('CALL GetMemberById(?)', [$id]);
+		if($this->check_master()) {
+			$db  = \Config\Database::connect();
+			$res = $db->query('CALL GetMemberById(?)', [$id]);
 
-        $parent = $res ? $res->getRowArray() : null;
-        if ($res) $res->freeResult();
-        $this->flushMultiResults($db);
+			$parent = $res ? $res->getRowArray() : null;
+			if ($res) $res->freeResult();
+			$this->flushMultiResults($db);
 
-        if (!$parent) {
-            return $this->response->setStatusCode(404)
-                ->setJSON(['status' => 'error', 'message' => 'Parent not found']);
-        }
-		$fullName = (string)($parent['fname'] ?? ' ') . ' ' . (string)($parent['lname'] ?? ' ');
+			if (!$parent) {
+				return $this->response->setStatusCode(404)
+					->setJSON(['status' => 'error', 'message' => 'Parent not found']);
+			}
+			$fullName = (string)($parent['fname'] ?? ' ') . ' ' . (string)($parent['lname'] ?? ' ');
 
-        return $this->response->setJSON([
-            'status' => 'ok',
-            'data'   => [
-			'id_members'  => (int)$parent['id_members'],
-			'fname' => (string)($parent['fname'] ?? ''),
-			'lname'  => (string)($parent['lname'] ?? ''),
-			'fullname'  => $fullName,
-			'email'      => (string)($parent['email'] ?? ''),
-			'callsign'      => (string)($parent['callsign'] ?? ''),
-            ]
-        ]);
+			return $this->response->setJSON([
+				'status' => 'ok',
+				'data'   => [
+				'id_members'  => (int)$parent['id_members'],
+				'fname' => (string)($parent['fname'] ?? ''),
+				'lname'  => (string)($parent['lname'] ?? ''),
+				'fullname'  => $fullName,
+				'email'      => (string)($parent['email'] ?? ''),
+				'callsign'      => (string)($parent['callsign'] ?? ''),
+				]
+			]);
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
     }
 	public function children(int $parentId = null)
     {
-        $pid = (int)($parentId ?? $this->request->getGet('parent_id') ?? 0);
-		if ($pid <= 0) {
-			return $this->response->setStatusCode(400)->setJSON(['error' => 'Invalid parent_id']);
+		if($this->check_master()) {
+			$pid = (int)($parentId ?? $this->request->getGet('parent_id') ?? 0);
+			if ($pid <= 0) {
+				return $this->response->setStatusCode(400)->setJSON(['error' => 'Invalid parent_id']);
+			}
+
+			$db = \Config\Database::connect();
+			$q  = $db->query('CALL GetChildMembers(?)', [$pid]);
+			$rows = $q->getResultArray() ?? [];
+
+			if ($q) $q->freeResult();
+			$this->flushMultiResults($db);
+
+			return $this->response->setJSON(['children' => $rows]);
 		}
-
-		$db = \Config\Database::connect();
-		$q  = $db->query('CALL GetChildMembers(?)', [$pid]);
-		$rows = $q->getResultArray() ?? [];
-
-		if ($q) $q->freeResult();
-		$this->flushMultiResults($db);
-
-		return $this->response->setJSON(['children' => $rows]);
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
     }
 	public function add_fam_mem(int $id = null) {
 		if($this->check_master()) {
@@ -710,6 +744,7 @@ class Master extends BaseController
 				$data['title'] = 'Database Error';
 				$data['msg'] = $retstat['err'];
 				echo view('status/status_view.php', $data);
+				echo view('template/footer');
 			}
 		}
 		else {
@@ -718,6 +753,7 @@ class Master extends BaseController
 			$data['title'] = 'Login Error';
 			$data['msg'] = 'There was an error while checking your credentials.<br><br>';
 			echo view('status/status_view.php', $data);
+			echo view('template/footer');
 		}
 	}
 	public function add_fam_existing(int $id = null) {
@@ -734,6 +770,7 @@ class Master extends BaseController
 			$data['title'] = 'Login Error';
 			$data['msg'] = 'There was an error while checking your credentials.<br><br>';
 			echo view('status/status_view.php', $data);
+			echo view('template/footer');
 		}
 	}
 	public function delete_mem(int $id = null) {
@@ -807,6 +844,7 @@ class Master extends BaseController
 			$data['title'] = 'Authorization Error';
 			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
 			echo view('status/status_view', $data);
+			echo view('template/footer');
 		}
 	}
 	public function unset_silent(int $id = null) {
@@ -846,7 +884,7 @@ class Master extends BaseController
 				 ' to go to home page<br><br>';
 				echo view('status/status_view', $data);
 			}
-
+			echo view('template/footer_master');
 		}
 		else {
 			echo view('template/header');
@@ -854,8 +892,8 @@ class Master extends BaseController
 			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
 			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
 			 echo view('status/status_view', $data);
+			 echo view('template/footer');
 		}
-		echo view('template/footer');
 	}
 
 	public function export_all_mems(): \CodeIgniter\HTTP\ResponseInterface
