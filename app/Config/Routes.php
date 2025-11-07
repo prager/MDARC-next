@@ -53,5 +53,6 @@ $routes->get('members/children/(:num)', 'Master::children/$1');
 // (optional) also keep query-string versions:
 $routes->get('members/children',        'Master::children');
 
-
+$routes->get('member/(:any)', 'Member::get_member/$1');
+$routes->get('member', 'Member::get_member');
 

@@ -11,11 +11,9 @@
            </div>
        </footer>
 
-       <!-- Modals -->
-       <?php include 'modal-login.php'; ?>
+       <!-- Modals udpate-->
        <?php include 'modal-tech.php'; ?>
        <?php include 'modal-reset-pass.php'; ?>
-       <?php include 'mod-confim-mem.php'; ?>
        <?php include 'mod-renew.php'; ?>
        <?php include 'mod-donate.php'; ?>
 
