@@ -21,6 +21,7 @@ $routes->post('edit-mem/(:num)', 'Master::edit_mem/$1');
 $routes->post('edit-mem', 'Master::edit_mem');
 $routes->post('load-silent/(:num)', 'Master::load_silent/$1');
 $routes->post('man-payment/(:num)', 'Master::man_payment/$1');
+$routes->post('update-mem/(:num)', 'Member::update_mem/$1');
 
 $routes->get('delete-faq/(:num)', 'Master::delete_faq/$1');
 $routes->get('edit-users', 'Master::edit_users');
@@ -52,6 +53,7 @@ $routes->get('members/parent/(:num)',   'Master::parent/$1');
 $routes->get('members/children/(:num)', 'Master::children/$1');
 // (optional) also keep query-string versions:
 $routes->get('members/children',        'Master::children');
+$routes->get('pers-data',        'Member::pers_data');
 
 $routes->get('member/(:any)', 'Member::get_member/$1');
 $routes->get('member', 'Member::get_member');

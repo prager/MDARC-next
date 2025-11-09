@@ -9,14 +9,18 @@
         <div class="col-lg-3 offset-lg-1 bg-light pt-3 mb-3">
           <table class="table table-borderless table-hover border">
             <tr class="border-bottom">
-              <td><a href="<?php echo base_url() . '/index.php/pers-data'; ?>" class="text-decoration-none text-body nav-link"> <i class="bi bi-person"></i> Edit Your Data </a></td>
+              <td><a href="<?php echo base_url() . 'index.php/pers-data'; ?>" class="text-decoration-none text-body nav-link"> <i class="bi bi-person"></i> Edit Your Data </a></td>
             </tr>
             <tr class="border-bottom">
-              <td><a href="<?php echo base_url() . '/index.php/show-update'; ?>" class="text-decoration-none text-body nav-link"> <i class="bi bi-gear"></i> Settings</a></td>
+              <td><a href="<?php echo base_url() . 'index.php/show-update'; ?>" class="text-decoration-none text-body nav-link"> <i class="bi bi-gear"></i> Settings</a></td>
             </tr>
             <tr class="border-bottom">
               <!-- <td><a href="#" data-bs-toggle="modal" data-bs-target="#goPay" class="text-decoration-none text-body nav-link"><i class="bi bi-clipboard-check"></i> Renew Membership</a></td> -->
-              <td><a href="https://pay-v1b.jlkconsulting.info/index.php/mdarc" class="text-decoration-none text-body nav-link"><i class="bi bi-clipboard-check"></i> Renew Membership</a></td>
+              <?php if(ENVIRONMENT === 'development') { ?>
+                <td><a href="https://pay-test.jlkconsulting.info/" class="text-decoration-none text-body nav-link"><i class="bi bi-clipboard-check"></i> Renew Membership</a></td>
+                <?php } else { ?>
+                <td><a href="https://pay-v1b.jlkconsulting.info/index.php/mdarc" class="text-decoration-none text-body nav-link"><i class="bi bi-clipboard-check"></i> Renew Membership</a></td>
+              <?php } ?>
             </tr>
             <tr class="border-bottom">
               <!-- <td><a href="#" data-bs-toggle="modal" data-bs-target="#goPay" class="text-decoration-none text-body nav-link"><i class="bi bi-clipboard-check"></i> Renew Membership</a></td> -->

@@ -305,4 +305,180 @@ class Member_model extends Model {
       }
       return $elem;
     }
+
+    public function update_mem($param) {
+      $retarr = array();
+      $db      = \Config\Database::connect();
+      $builder = $db->table('tMembers');
+      $builder->resetQuery();
+      $w_phone = $this->do_phone($param['w_phone']);
+      $h_phone = $this->do_phone($param['h_phone']);
+      $param['w_phone'] = $w_phone['phone'];
+      $param['h_phone'] = $h_phone['phone'];
+      $callsign_arr = $this->do_callsign($param);
+      $param['callsign'] = $callsign_arr['callsign'];
+      $email_arr = $this->do_email($param);
+      $param['email'] = $email_arr['email'];
+      //echo '<br><br><br><br>OK in update_mem!';
+  
+      $retarr['msg'] = array();
+      $retarr['flag'] = TRUE;
+      $retarr['msg']['cell'] = NULL;
+      if(!$w_phone['flag']) {
+        $retarr['msg']['cell'] = 'Cell number entered in wrong format and was not saved.';
+        $retarr['flag'] = FALSE;
+      }
+       $retarr['msg']['phone'] = NULL;
+       if(!$h_phone['flag']) {
+         $retarr['msg']['phone'] = 'Other phone number entered in wrong format and was not saved.';
+         $retarr['flag'] = FALSE;
+       }
+  
+      $retarr['msg']['email'] = NULL;
+      if(!$email_arr['flag']) {
+        $retarr['msg']['email'] = 'You entered an email that is already in database. Please, enter a different email.';
+        $retarr['flag'] = FALSE;
+      }
+  
+     $retarr['msg']['callsign'] = NULL;
+     if(!$callsign_arr['flag']) {
+       $retarr['msg']['callsign'] = $callsign_arr['lic_stat'];
+       $retarr['flag'] = FALSE;
+     }
+  
+      $id = $param['id'];
+      unset($param['id']);
+      $builder->update($param, ['id_members' => $id]);
+      $builder->resetQuery();
+      $builder->where('id_members', $id);
+      $mem_obj = $builder->get()->getRow();
+      $id_usr = $mem_obj->id_users;
+      if($id_usr != 0) {
+        $usr_array = array(
+          'fname' => $mem_obj->fname,
+          'lname' => $mem_obj->lname,
+          'callsign' => $mem_obj->callsign,
+          'street' => $mem_obj->address,
+          'email' => $mem_obj->email,
+          'phone' => $mem_obj->w_phone
+        );
+        $builder = $db->table('users');
+        $builder->resetQuery();
+        $builder->update($usr_array, ['id_user' => $id_usr]);
+      }
+  
+      return $retarr;
+    }
+
+  /**
+  * Converts number string into phone format
+  * Inspired by: https://www.geeksforgeeks.org/how-to-format-phone-numbers-in-php/
+  * - that didn't work!!!
+  * Instead the second option: https://www.delftstack.com/howto/php/php-format-phone-number/
+  */
+  public function do_phone($phone) {
+    $number = preg_replace("/[^0-9]/", "", $phone);
+    $retarr = array();
+    $retarr['phone'] = "";
+    $retarr['flag'] = TRUE;
+    //echo '<br><br><br><br>';
+    if(strlen($number) == 11) {
+      $retarr['phone'] = sprintf("%s-%s-%s",
+          substr($number, 1, 3),
+          substr($number, 4, 3),
+          substr($number, 7));
+    }
+    elseif(strlen($number) == 10) {
+      $retarr['phone'] = sprintf("%s-%s-%s",
+          substr($number, 0, 3),
+          substr($number, 3, 3),
+          substr($number, 6));
+    }
+    else{
+      $retarr['flag'] = FALSE;
+    }
+    return $retarr;
+  }
+  public function do_callsign($param) {
+
+    $retarr = array();
+
+    $retarr['flag'] = TRUE;
+
+    $retarr['lic_stat'] = NULL;
+    $retarr['callsign'] = $param['callsign'];
+
+    $flag_call = 0;
+
+// check for SWL and filled callsign
+    if(strtolower($param['callsign'] ?? '') == "none" && $param['license'] == 'SWL') {
+      $flag_call++;
+    }
+
+    if(strtolower($param['callsign'] ?? '') == "swl" && $param['license'] == 'SWL') {
+      $flag_call++;
+    }
+
+    if((strlen($param['callsign']) == 0) && ($param['license'] == 'SWL')) {
+      $flag_call++;
+    }
+
+    if((strtolower($param['license'] ?? '') == 'swl') && ($flag_call == 0)) {
+      //if((strlen($param['callsign']) > 0) || ($flag_call > 0)) { - doesn't work!!!!
+      $retarr['lic_stat'] = 'There cannot be a call sign if License Type is "SWL"';
+      $retarr['flag'] = FALSE;
+      $retarr['callsign'] = '';
+    }
+
+// check for blank or "none" callsign
+    $flag_call = 0;
+    if(strtolower($param['callsign'] ?? '') == "none") {
+      $flag_call++;
+    }
+    if($param['callsign'] == "") {
+      $flag_call++;
+    }
+
+    if(($param['license'] != 'SWL') && ($flag_call > 0)) {
+      $retarr['lic_stat'] = 'Please, enter a valid callsign';
+      $retarr['flag'] = FALSE;
+      $retarr['callsign'] = '';
+    }
+
+    if($retarr['flag']) {
+      $db      = \Config\Database::connect();
+      $builder = $db->table('tMembers');
+      $builder->where('id_members!=', $param['id']);
+      $builder->where('callsign', $param['callsign']);
+      if(($builder->countAllResults() > 0) && ($param['license'] != 'SWL')) {
+        $retval['lic_stat'] = 'You entered a callsign that is already in database';
+        $retarr['flag'] = FALSE;
+        $retarr['callsign'] = '';
+      }
+      $db->close();
+    }
+    return $retarr;
+  }
+
+  public function do_email($param) {
+    $db      = \Config\Database::connect();
+    $builder = $db->table('tMembers');
+    $builder->where('id_members!=', $param['id']);
+    $builder->where('parent_primary!=', $param['id']);
+    $builder->where('email', $param['email']);
+    $retarr = array();
+    if($builder->countAllResults() > 0) {
+      $builder->resetQuery();
+      $builder->where('id_members', $param['id']);
+      $retarr['email'] = $builder->get()->getRow()->email;
+      $retarr['flag'] = FALSE;
+    }
+    else {
+      $retarr['email'] = $param['email'];
+      $retarr['flag'] = TRUE;
+    }
+    $db->close();
+    return $retarr;
+  }
+
 }
