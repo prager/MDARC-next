@@ -26,22 +26,22 @@
                   <a href="<?php echo base_url(); ?>" class="nav-link">Home</a>
               </li>
               <li class="nav-item">
-                  <a href="<?php echo base_url() . '/index.php/contact'; ?>" class="nav-link">Contact</a>
+                  <a href="<?php echo base_url() . 'index.php/contact'; ?>" class="nav-link">Contact</a>
               </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="helpMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   About
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="helpMenu">
-                  <li><a class="dropdown-item"><a href="<?php echo base_url() . '/index.php/faqs'; ?>" class="nav-link"> &nbsp; FAQs</a></li>
+                  <li><a class="dropdown-item"><a href="<?php echo base_url() . 'index.php/faqs'; ?>" class="nav-link"> &nbsp; FAQs</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item"><a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#tech"> &nbsp; About</a></li>
                 </ul>
               </li>
               <li class="nav-item">
-                  <a href="<?php echo base_url() . '/index.php/logout/'; ?>" class="nav-link"><i class="bi bi-box-arrow-up-right"></i> Logout </a>
+                  <a href="<?php echo base_url() . 'index.php/logout/'; ?>" class="nav-link"><i class="bi bi-box-arrow-up-right"></i> Logout </a>
               </li>
-              <form action="<?php echo base_url() . '/index.php/member-search'; ?>" method="post" class="d-flex px-3">
+              <form action="<?php echo base_url() . 'index.php/member-search'; ?>" method="post" class="d-flex px-3">
                 <input class="form-control me-4" type="search" name="search" placeholder="Search Members Database" aria-label="Search">
                 <button class="btn btn-outline-secondary" type="submit">Search</button>
               </form>

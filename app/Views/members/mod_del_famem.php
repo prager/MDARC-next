@@ -7,7 +7,7 @@
       </div>
       <div class="modal-body">
         <p>Deactivate Member <strong><?php echo $mem['fname'] . ' ' . $mem['lname'] . ' ' . $mem['callsign']; ?>?</strong></p>
-        <a href="<?php echo base_url() . '/index.php/delete-fam-mem/'. $mem['id_members']; ?>" class="btn btn-danger"> Deactivate </a>
+        <a href="<?php echo base_url() . 'index.php/member/rem-fam/'. $mem['id_members']; ?>" class="btn btn-danger"> Deactivate </a>
         <br>
       </div>
       <div class="modal-footer">&nbsp;

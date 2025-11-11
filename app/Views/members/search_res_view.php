@@ -12,59 +12,42 @@
               <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Cur Year</th>
+                <th>Mem Year</th>
                 <th>Callsign</th>
                 <th>Mem Type</th>
                 <th>License</th>
                 <th>Email</th>
-                <th>Manual Payment</th>
-                <th>Deactivate</th>
               </tr>
             </thead>
             <tbody>
             <?php if (!empty($rows)): ?>
-              <?php foreach ($rows as $m): ?>
+              <?php foreach ($rows as $mem): ?>
                 <tr>
-                  <td><?= esc($m['id_members'] ?? $m['id_member'] ?? '') ?></td>
+                  <td><?= esc($mem['id_members'] ?? $mem['id_member'] ?? '') ?></td>
                   <td>
-                    <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#editMem<?= esc($m['id_members']) ?>"><?= esc($m['lname'] ?? '') . ', ' .  esc($m['fname'] ?? '') ?></a>
+                    <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#showMem<?= esc($mem['id_members']) ?>"><?= esc($mem['lname'] ?? '') . ', ' .  esc($mem['fname'] ?? '') ?></a>
                   </td>
-                  <?php include 'modal_update_mem.php'; ?>
-                  <td><?= esc($m['cur_year'] ?? '') ?></td>
-                  <td><?= esc($m['callsign'] ?? '') ?></td>
+                  <?php include 'modal_show_mem.php'; ?>
+                  <td><?= esc($mem['cur_year'] ?? '') ?></td>
+                  <td><?= esc($mem['callsign'] ?? '') ?></td>
                   <td>
                     <?php
                     // Decide which ID the modal should load
                     $parentId = 0;
-                    if ((int)($m['id_mem_types'] ?? 0) === 2) {
+                    if ((int)($mem['id_mem_types'] ?? 0) === 2) {
                         // Primary member: show their own children
-                        $parentId = (int)($m['id_members'] ?? 0);
-                    } elseif (!empty($m['parent_primary'])) {
+                        $parentId = (int)($mem['id_members'] ?? 0);
+                    } elseif (!empty($mem['parent_primary'])) {
                         // Child member: open the family using the parent's id
-                        $parentId = (int)$m['parent_primary'];
+                        $parentId = (int)$mem['parent_primary'];
                     }
 
                     if ($parentId > 0): ?>
-                      <a href="#"
-                        class="family-link text-decoration-none"
-                        data-parent-id="<?= esc($parentId) ?>"
-                        data-bs-toggle="modal"
-                        data-bs-target="#parentModal">
-                        <?= esc($m['type_description'] ?? '') ?>
-                      </a>
-                    <?php else: ?>
-                      <?= esc($m['type_description'] ?? '') ?>
+                        <?= esc($mem['type_description'] ?? '') ?>                      
                     <?php endif; ?>
                   </td>
-                  <td><?= esc($m['license'] ?? '') ?></td>
-                  <td><?= esc($m['email'] ?? '') ?></td>
-                  <td>
-                    <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#manPayment<?= esc($m['id_members']) ?>">Make Payment</a>
-                    <?php include 'mod_man_payment.php'; ?>
-                  </td>
-                  <td class="text-center">
-                      <a href="#" data-bs-toggle="modal" data-bs-target="#delMem<?= esc($m['id_members']) ?>"><i class="bi bi-trash"></i></a>
-                  </td>
+                  <td><?= esc($mem['license'] ?? '') ?></td>
+                  <td><?= esc($mem['email'] ?? '') ?></td>
                 </tr>
               <?php endforeach; ?>
             <?php else: ?>
@@ -108,25 +91,7 @@
                     </table>
                   </div>
                 </div>
-                <form id="existingMemForm" method="post" action="">
-                <input type="hidden" id="par_id_input" name="par_id_input" value="">
-                <div class="row my-3">
-                    <div class="col-lg-4">
-                        <label for="id_existing_mem" class="form-label">Add a Family Member</label>
-                        <input class="form-control" id="id_existing_mem" name="id_existing_mem" type="text" placeholder="ID Members" aria-label="Existing ID Members">
-                    </div>
-                    <div class="col-lg-4 d-flex flex-column d-grid">
-                        <label for="id_mem_type">Member Type</label>
-                        <select id="id_mem_type" name="id_mem_type" class="form-select mt-auto" required>
-                            <option value="3" selected>Spouse</option>
-                            <option value="4">Additional</option>
-                        </select>
-                    </div>
-                    <div class="col-lg-3 d-flex flex-column d-grid">
-                        <button type="submit" class="btn btn-outline-secondary mt-auto">Submit</button>
-                    </div>
-                </div>
-            </form>
+
               <div class="row mt-3">
                 <div class="col">
                   <div class="accordion" id="accAddFam">

@@ -7,7 +7,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
     </form>
-      <form action="<?php echo base_url() . '/index.php/add-fam-mem/'. $mem['id_members']; ?>" method="post">
+      <form action="<?php echo base_url() . 'index.php/add-fam-mem/'. $mem['id_members']; ?>" method="post">
       <div class="modal-body">
       <section class="px-2">
         <div class="row pt-2">

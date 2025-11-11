@@ -294,7 +294,7 @@
                     </div>
                     <div class="modal-body">
                       <p>Delete Family Member <strong><?php echo $fam_mem['fname'] . ' ' . $fam_mem['lname'] . ' ' . $fam_mem['callsign']; ?>?</strong></p>
-                      <a href="<?php echo base_url() . 'index.php/delete-fam-mem/'. $fam_mem['id_members']; ?>" class="btn btn-danger"> Delete </a>
+                      <a href="<?php echo base_url() . 'index.php/member/rem-fam/'. $fam_mem['id_members']; ?>" class="btn btn-danger"> Delete </a>
                       <br>
                     </div>
                     <div class="modal-footer">&nbsp;

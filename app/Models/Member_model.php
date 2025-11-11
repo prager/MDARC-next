@@ -481,4 +481,157 @@ class Member_model extends Model {
     return $retarr;
   }
 
+  public function edit_fam_mem($param) {
+    if(strlen(trim($param['callsign'])) == 0) {$param['callsign'] = 'SWL';}
+    $db      = \Config\Database::connect();
+    $builder = $db->table('tMembers');
+    $builder->where('id_members', $param['id']);
+    $mem = $builder->get()->getRow();
+
+    $orig_mem = $this->get_fam_mem($param['id']);
+
+    $id = $param['id'];
+    unset($param['id']);
+
+//get current year and pay date of the parent
+    $builder->resetQuery();
+    $builder->where('id_members', $mem->parent_primary);
+    $parent = $builder->get()->getRow();
+    $param['cur_year'] = $parent->cur_year;
+    $param['paym_date'] = $parent->paym_date;
+
+    $builder->resetQuery();
+    $builder->update($param, ['id_members' => $id]);
+    $param['id'] = $id;
+
+// Check for dup entry (need parent_primary for that)
+    $param['parent_primary'] = $mem->parent_primary;
+    $param['id'] = $id;
+    $dups = $this->check_second_dup($param);
+
+    $flag = TRUE;
+    $retval = '';
+
+    if($dups['fam_mem']) {
+      $retval = 'This family member already exists in database.';
+      $flag = FALSE;
+    }
+
+    if($dups['callsign']) {
+      $retval == NULL ? $retval = $dups['lic_stat'] : $retval .= $dups['lic_stat'];
+      $flag = FALSE;
+    }
+
+    if($dups['email']) {
+      $retval == NULL ? $retval = '<br>This email '. $param['email'] . ' already exists in database. No data was saved.' : $retval .= '<br>This email '. $param['email'] . ' already exists in database. No data was saved.';
+      $flag = FALSE;
+    }
+
+// In case we have exact duplicate fam member or duplicate callsign roll the changes back to the original
+    if(!$flag) {
+      $id = $param['id'];
+      unset($orig_mem['id']);
+      unset($orig_mem['cur_year']);
+      unset($orig_mem['carrier']);
+      unset($orig_mem['dir']);
+      unset($orig_mem['arrl']);
+      unset($orig_mem['phone_unlisted']);
+      unset($orig_mem['pay_date_file']);
+      unset($orig_mem['silent']);
+      $builder->resetQuery();
+      $builder->update($orig_mem, ['id_members' => $id]);
+    }
+
+    $db->close();
+    return $retval;
+  }
+  /**
+* Checks for second duplicate family member when editing
+* The difference from the ordinary check_dup is
+* the check for the callsign where id != id_members
+* and count results are > 1
+*/
+private function check_second_dup($param) {
+    $db      = \Config\Database::connect();
+    $builder = $db->table('tMembers');
+    $builder->where('lname', $param['lname']);
+    $builder->where('fname', $param['fname']);
+    $builder->where('mem_type', $param['mem_type']);
+    $builder->where('parent_primary', $param['parent_primary']);
+
+    $retarr = array();
+
+  //check for duplicate family member
+    $builder->countAllResults() > 1 ? $retarr['fam_mem'] = TRUE : $retarr['fam_mem'] = FALSE;
+
+  //check for duplicate callsign
+    $retarr['callsign'] = FALSE;
+    $sum = 0;
+    if($param['callsign'] == '') {$sum++;}
+    if(strtolower($param['callsign'] ?? '') == 'none'){$sum++;}
+    if(strtolower($param['callsign'] ?? '') == 'swl'){$sum++;}
+
+  //if(($param['callsign'] != '') || (strtolower($param['callsign']) != 'none') || (strtolower($param['callsign']) != 'swl')) {
+    $retarr['lic_stat'] = '';
+    if($sum == 0) {
+      $builder->resetQuery();
+      $builder->where('callsign', $param['callsign']);
+      $builder->where('id_members!=', $param['id']);
+      if($builder->countAllResults() > 0) {
+        $retarr['callsign'] = TRUE;
+        $retarr['lic_stat'] = 'Duplicate callsign.';
+      }
+    }
+
+    $flag_call = 0;
+
+    if(strtolower($param['callsign'] ?? '') == "none" && strtolower($param['license'] ?? '') == 'swl') {
+      $flag_call++;
+    }
+
+    if(strtolower($param['callsign'] ?? '') == "swl" && strtolower($param['license']) == 'swl' ?? '') {
+      $flag_call++;
+    }
+
+    if((strlen($param['callsign']) == 0) && (strtolower($param['license'] ?? '') == 'swl')) {
+      $flag_call++;
+    }
+
+    $retarr['lic_stat'] = NULL;
+    if((strtolower($param['license'] ?? '') == 'swl') && ($flag_call == 0)) {
+      //if((strlen($param['callsign']) > 0) || ($flag_call > 0)) { - doesn't work!!!!
+        $param['callsign'] = 'none';
+        $retarr['lic_stat'] = 'No callsign allowed for Licence Type "SWL"';
+        $retarr['callsign'] = TRUE;
+    }
+
+  // check for blank or "none" callsign
+    $flag_call = 0;
+    if(strtolower($param['callsign'] ?? '') == "none") {
+      $flag_call++;
+    }
+    if($param['callsign'] == "") {
+      $flag_call++;
+    }
+
+    if(($param['license'] != 'SWL') && ($flag_call > 0)) {
+      $retarr['lic_stat'] = 'Please, enter a valid callsign';
+      $retarr['callsign'] = TRUE;
+    }
+
+    if((strlen($param['callsign']) < 4) && ($retarr['callsign'] == FALSE)) {
+      $retarr['lic_stat'] = 'Please, enter a valid callsign. It must be more than 3 characters long.';
+      $retarr['callsign'] = TRUE;
+    }
+
+  //check for duplicate email
+    $retarr['email'] = FALSE;
+    $builder->resetQuery();
+    $builder->where('email', $param['email']);
+    $builder->where('parent_primary!=', $param['parent_primary']);
+    $builder->where('id_members!=', $param['parent_primary']);
+    $builder->countAllResults() > 0 ? $retarr['email'] = TRUE : $retarr['email'] = FALSE;
+
+    return $retarr;
+  }
 }
