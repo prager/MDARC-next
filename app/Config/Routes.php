@@ -25,6 +25,7 @@ $routes->post('update-mem/(:num)', 'Member::update_mem/$1');
 $routes->post('member-search', 'Member::search');
 $routes->post('edit-fam-mem/(:num)', 'Member::edit_fam_mem/$1');
 $routes->post('add-fam-mem/(:num)', 'Member::add_fam_mem/$1');
+$routes->post('do-update', 'Member::do_update');
 
 $routes->get('delete-faq/(:num)', 'Master::delete_faq/$1');
 $routes->get('edit-users', 'Master::edit_users');
@@ -61,4 +62,5 @@ $routes->get('pers-data',        'Member::pers_data');
 
 $routes->get('member/(:any)', 'Member::get_member/$1');
 $routes->get('member', 'Member::get_member');
+$routes->get('show-update', 'Member::show_update');
 
