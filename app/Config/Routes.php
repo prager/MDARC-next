@@ -63,4 +63,5 @@ $routes->get('pers-data',        'Member::pers_data');
 $routes->get('member/(:any)', 'Member::get_member/$1');
 $routes->get('member', 'Member::get_member');
 $routes->get('show-update', 'Member::show_update');
+$routes->get('mem_print-dir/(:num)', 'Member::print_dir/$1');
 

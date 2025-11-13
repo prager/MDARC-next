@@ -24,17 +24,17 @@
             </tr>
             <tr class="border-bottom">
               <!-- <td><a href="#" data-bs-toggle="modal" data-bs-target="#goPay" class="text-decoration-none text-body nav-link"><i class="bi bi-clipboard-check"></i> Renew Membership</a></td> -->
-              <td><a href="<?php echo base_url() . '/index.php/mem_print-dir'; ?>" class="text-decoration-none text-body nav-link"><i class="bi bi-book"></i> Directory by Last Name</a></td>
+              <td><a href="<?php echo base_url() . 'index.php/mem_print-dir/1'; ?>" class="text-decoration-none text-body nav-link"><i class="bi bi-book"></i> Directory by Last Name</a></td>
             </tr>
             <tr class="border-bottom">
               <!-- <td><a href="#" data-bs-toggle="modal" data-bs-target="#goPay" class="text-decoration-none text-body nav-link"><i class="bi bi-clipboard-check"></i> Renew Membership</a></td> -->
-              <td><a href="<?php echo base_url() . '/index.php/mem_print-callsigns'; ?>" class="text-decoration-none text-body nav-link"><i class="bi bi-book"></i> Directory by Callsign</a></td>
+              <td><a href="<?php echo base_url() . 'index.php/mem_print-dir/0'; ?>" class="text-decoration-none text-body nav-link"><i class="bi bi-book"></i> Directory by Callsign</a></td>
             </tr>
 
             <!-- Renewal modal -->
             <div class="modal fade" id="goPay" tabindex="-1" aria-labelledby="goPayLabel" aria-hidden="true">
               <div class="modal-dialog">
-                <form action="<?php echo base_url() . '/index.php/go-pay/' . $primary['id_members']; ?>" method="post">
+                <form action="<?php echo base_url() . 'index.php/go-pay/' . $primary['id_members']; ?>" method="post">
                 <div class="modal-content">
                   <div class="modal-header">
                     <h5 class="modal-title" id="goPayLabel">Renew Membership for <?php echo $primary['fname'] . ' ' . $primary['lname'] . ' ' . $primary['callsign']; ?></h5>
@@ -96,7 +96,7 @@
             <!-- Donate Modal -->
             <div class="modal fade" id="goDonate" tabindex="-1" aria-labelledby="goDonateLabel" aria-hidden="true">
               <div class="modal-dialog">
-                <form action="<?php echo base_url() . '/index.php/go-pay/' . $primary['id_members']; ?>" method="post">
+                <form action="<?php echo base_url() . 'index.php/go-pay/' . $primary['id_members']; ?>" method="post">
                 <div class="modal-content">
                   <div class="modal-header">
                     <h5 class="modal-title" id="goDonateLabel">Donate to MDARC</h5>
@@ -141,7 +141,7 @@
             <?php  } ?>
             <table class="table table-borderless table-hover border">
               <tr class="border-bottom">
-                <td><a href="<?php echo base_url() . '/index.php/logout'; ?>" class="text-decoration-none text-body nav-link"><i class="bi bi-box-arrow-up-right"></i> Logout</a></td>
+                <td><a href="<?php echo base_url() . 'index.php/logout'; ?>" class="text-decoration-none text-body nav-link"><i class="bi bi-box-arrow-up-right"></i> Logout</a></td>
               </tr>
             </table>
         </div>

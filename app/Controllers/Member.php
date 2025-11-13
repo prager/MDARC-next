@@ -435,4 +435,23 @@ class Member extends BaseController
 		}
 		echo view('template/footer_member');
 	}
+  public function print_dir(int $direction = 1) {
+		if($this->check_mem()) {
+			echo view('template/header_member');
+        $model = $this->dir_mod;
+        $rows  = $model->getDirectory($direction);
+
+        echo view('members/dir_view', [
+            'rows'             => $rows,
+            'orderBy'  => $direction,
+        ]);
+        echo view ('template/footer_member');
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+		}
+	}
 }

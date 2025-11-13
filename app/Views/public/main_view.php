@@ -9,10 +9,10 @@
     <?php }?>
     <div class="d-sm-flex align-items-center justify-content-between pb-1">
       <div class="col-lg-6">
-        <!-- <h1>MDARC <span class="text-warning">Memberships</span> - <a href="<?php echo base_url() . '/index.php/add-mem/new-member'; ?>" class="text-decoration-none">Join Us</a>  </h1> -->
+        <!-- <h1>MDARC <span class="text-warning">Memberships</span> - <a href="<?php echo base_url() . 'index.php/add-mem/new-member'; ?>" class="text-decoration-none">Join Us</a>  </h1> -->
         <h1>MDARC <span class="text-warning">Memberships</span> - <a href="https://www.mdarc.org/about-us/joinrenewupdate" class="text-decoration-none" target="_blank">Join Us</a>  </h1>
         <?php if(ENVIRONMENT === 'development') { ?>
-        <p class="mt-xs-5"><small><span class="fw-bold text-danger">This is a Membership Portal for MDARC members - dev version!</span> For more info click <a href="<?php echo base_url(); ?>/index.php/faqs" class="text-decoration-none">here</a></small></p>
+        <p class="mt-xs-5"><small><span class="fw-bold text-danger">This is a Membership Portal for MDARC members - dev version!</span> For more info click <a href="<?php echo base_url(); ?>index.php/faqs" class="text-decoration-none">here</a></small></p>
         <?php } ?>
           <form action="<?php echo base_url() . 'index.php/login' ?>" method="post">
             <div class="col-lg-10 mb-3">
@@ -39,7 +39,7 @@
 <!--Signup for user access-->
 <section class="bg-primary text-light p-5">
     <div class="container">
-      <form action="<?php echo base_url() . '/index.php/register' ?>" method="post">
+      <form action="<?php echo base_url() . 'index.php/register' ?>" method="post">
         <div class="d-md-flex justify-content-between align-items-center">
             <h3 class="mb-3 ms-3 mb-md-0">Sign up for user access</h3>
             <div class="col-lg-6 offset-col-lg-3">
