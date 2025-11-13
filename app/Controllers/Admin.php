@@ -1,0 +1,1008 @@
+<?php
+
+namespace App\Controllers;
+use App\Controllers\BaseController;
+use CodeIgniter\I18n\Time;
+use Config\Services;
+
+class Admin extends BaseController
+{    var $username;
+    public function index(): void
+    {
+        if($this->check_admin()) {
+            echo view('template/header_admin.php');
+            echo view('admin/admin_view.php');
+			echo view('template/footer_master');
+        }
+        else {
+            $this->login_mod->logout();
+            echo view('template/header');
+            $data['title'] = 'Login Error';
+            $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') . ' to reset your password <br><br>';
+            echo view('status/status_view', $data);
+			echo view('template/footer');
+        }
+            
+    }
+/**
+* Checks for admin user according to the type code
+*/
+	private function check_admin() {
+		$retval = FALSE;
+		$user_arr = $this->login_mod->get_cur_user();
+		if((($user_arr['type_code'] == 99)) || (($user_arr != NULL) && ($user_arr['type_code'] == 4 && $user_arr['authorized'] == 1))) {
+			$retval = TRUE;
+		}
+		return $retval;
+	}
+    public function master_faqs() {
+		if($this->check_admin()) {
+			echo view('template/header_admin');
+			$data = $this->staff_mod->get_faqs();
+			$data['msg'] = '';
+			echo view('admin/faqs_view', $data);
+			echo view('template/footer_master');
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Login Error';
+			$data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+		
+	}
+
+    public function edit_faq($id = null) {
+		if($this->check_admin()) {
+			echo view('template/header_admin');
+			$param['id'] = $id;
+			$param['id_user'] = $this->login_mod->get_cur_user()['id_user'];
+			$param['theq'] = $this->request->getPost('theQ');
+			$param['thea'] = $this->request->getPost('theA');
+			$param['id_user_type'] = $this->request->getPost('mem_types');
+			$this->staff_mod->edit_faq($param);
+			$data = $this->staff_mod->get_faqs();
+			$data['msg'] = '<p class="text-danger"> Record updated!</p>';
+			echo view('admin/faqs_view', $data);
+			echo view('template/footer_master');
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Login Error';
+			$data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+	}
+	public function delete_faq($id = null) {
+		if($this->check_admin()) {
+			echo view('template/header_admin');
+			$this->staff_mod->delete_faq($id);
+			$data = $this->staff_mod->get_faqs();
+			$data['msg'] = '<p class="text-danger"> Record updated!</p>';
+			echo view('admin/faqs_view', $data);
+			echo view('template/footer_master');
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Login Error';
+			$data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+	}
+	/**
+	* Enables master user edit users
+	*/
+	public function edit_users() {
+		echo view('template/header_admin');
+		if($this->check_admin()) {
+			$users_data = $this->master_mod->get_users_data();
+			$data['usr_types'] = $users_data['usr_types'];
+			$data['users'] = $users_data['users'];
+			$data['states'] = $this->data_mod->get_states_array();
+			$data['msg'] = '';
+			$data['errmsg'] = '';
+			echo view('admin/edit_users_view', $data);
+			echo view('template/footer_master');
+		}
+		else {
+			$data['title'] = 'Login Error';
+			$data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+	}
+
+	/**
+	* Saves the updated admin user data into db
+	*/
+	public function load_admin($id = null) {
+		if($this->check_admin()) {
+			echo view('template/header_admin');
+			$param['id_user'] = $id;
+			$param['fname'] = $this->request->getPost('fname');
+			$param['lname'] = $this->request->getPost('lname');
+			$param['phone'] = $this->request->getPost('phone');
+			$param['facebook'] = $this->request->getPost('facebook');
+			$param['twitter'] = $this->request->getPost('twitter');
+			$param['linkedin'] = $this->request->getPost('linkedin');
+			$param['email'] = $this->request->getPost('email');
+			$param['street'] = $this->request->getPost('street');
+			$param['city'] = $this->request->getPost('city');
+			$param['state_cd'] = $this->request->getPost('state');
+			$param['zip_cd'] = $this->request->getPost('zip');
+			$param['comment'] = $this->request->getPost('comment');
+			$param['callsign'] = $this->request->getPost('callsign');
+			$param['id_user_type'] = $this->request->getPost('usr_type');
+			$this->master_mod->load_admin($param);
+			$data = $this->master_mod->get_users_data();
+			$data['states'] = $this->data_mod->get_states_array();
+			$data['msg'] = 'Updated user. Thank you!';
+			$data['errmsg'] = NULL;
+			echo view('admin/edit_users_view', $data);
+			echo view('template/footer_master');
+		}
+		else {
+				echo view('template/header');
+ 				 $data['title'] = 'Login Error';
+ 				 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+ 				 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+ 				 echo view('status/status_view', $data);
+				  echo view('template/footer_master');
+		}
+	}
+	public function reset_user($id = null) {
+		if($this->check_admin()) {
+			echo view('template/header_admin');
+				$param['id_user'] = $id;
+				$param['username'] = $this->request->getPost('username');
+				$param['pass'] = $this->request->getPost('pass');
+				$param['pass2'] = $this->request->getPost('pass2');
+				$flags = $this->master_mod->reset_user($param);
+				if ($flags['flag']) {
+ 			 		$data = $this->master_mod->get_users_data();
+		 		 	$data['states'] = $this->data_mod->get_states_array();
+				 	$data['msg'] = 'Username and pasword were succesfuly reset. Thank you!';
+					$data['errmsg'] = NULL;
+		 		  	echo view('admin/edit_users_view', $data);
+				}
+				else {
+					$data['errmsg'] = 'Please, fix the following error(s):<br>';
+					$data['id_user'] = $param['id_user'];
+					if($flags['usr_dup']) $data['errmsg'] .= '<p style="color:red;">Duplicate username</p>';
+					if(!($flags['pass_match'])) $data['errmsg'] .= '<p style="color:red;">Passwords do not match</p>';
+					if(!($flags['pass_comp'])) $data['errmsg'] .= '<p style="color:red;">Password complexity requirement not met</p>';
+					echo view('admin/edit_users_view', $data);
+				}
+				echo view('template/footer_master');
+		}
+		else {
+			echo view('template/header');
+			 $data['title'] = 'Login Error';
+			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			 echo view('status/status_view', $data);
+			 echo view('template/footer');
+		}
+	}
+	public function activate($id = null) {
+		if($this->check_admin()) {
+			echo view('template/header_admin');
+			 $this->master_mod->activate($id);
+			 $data = $this->master_mod->get_users_data();
+	 		 $data['states'] = $this->data_mod->get_states_array();
+			 $data['msg'] = 'Activated / deactivated user. Thank you!';
+			 $data['errmsg'] = NULL;
+	 		 echo view('admin/edit_users_view', $data);
+			 echo view('template/footer_master');
+		}
+		else {
+			echo view('template/header');
+			 $data['title'] = 'Login Error';
+			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			 echo view('status/status_view', $data);
+			 echo view('template/footer');
+		}
+	}
+	public function authorize($id = null) {
+		if($this->check_admin()) {
+			echo view('template/header_admin');
+			 $this->master_mod->authorize($id);
+			 $data = $this->master_mod->get_users_data();
+	 		 $data['states'] = $this->data_mod->get_states_array();
+			 $data['msg'] = 'Authorized / Unauthorized user. Thank you!';
+			 $data['errmsg'] = NULL;
+	 		 echo view('admin/edit_users_view', $data);
+			  echo view('template/footer_master');
+		}
+		else {
+			echo view('template/header');
+			 $data['title'] = 'Login Error';
+			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			 echo view('status/status_view', $data);
+			 echo view('template/footer');
+		}
+	}
+	public function search() {
+		if($this->check_admin()) {
+			echo view('template/header_admin.php');
+			
+			//$search_str = $this->request->getPost('search');
+			$q  = trim((string) ($this->request->getPost('search') ?? ''));
+			$db = \Config\Database::connect();
+	
+			// Call the stored procedure (it already returns empty set if q is empty)
+			$query = $db->query('CALL Search_Members(?)', [$q]);
+			$rows  = $query->getResultArray() ?? [];
+	
+			// Always clean up after CALL to avoid "Commands out of sync"
+			$query->freeResult();
+			while ($db->connID->more_results() && $db->connID->next_result()) {
+				if ($extra = $db->connID->store_result()) {
+					$extra->free();
+				}
+			}
+			$this->flushMultiResults($db);
+
+			// Call stored procedure directly
+			$query = $db->query('CALL Get_Mem_Types()');
+			$types = $query->getResultArray();
+	
+			// IMPORTANT: free the result set to avoid "commands out of sync"
+			$query->freeResult();
+			while ($db->connID->more_results() && $db->connID->next_result()) {
+				if ($extra = $db->connID->store_result()) {
+					$extra->free();
+				}
+			}
+			$this->flushMultiResults($db);
+	
+			$count = count($rows);
+	
+			if ($count === 0) {
+				$flash = 'No results found';
+				$flashType = 'warning';
+			} elseif ($count === 100) {
+				$flash = 'The first 100 records is shown. You need to refine your search.';
+				$flashType = 'danger';
+			} else {
+				$flash = $count . ' members found';
+				$flashType = 'success';
+			}
+
+			$licence = array('SWL', 'Technician', 'General', 'Advanced', 'Amateur Extra');
+
+			// All U.S. state abbreviations
+			$states = [
+				'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+				'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+				'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+				'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+				'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+			];
+
+			$mem_cost = $this->admin_mod->get_mem_cost();
+
+			$data = array(
+				'q'         => $q,
+				'rows'      => $rows,
+				'count'     => $count,
+				'flash'     => $flash,
+				'flashType' => $flashType,
+				'lic'	=> $licence,
+				'types' => $types, 
+				'states' => $states,
+				'mem_cost' => $mem_cost
+			);
+
+			echo view('admin/search_res_view.php', $data);
+			echo view('template/footer_master');
+	   }
+		else {
+			echo view('template/header');
+			$this->login_mod->logout();
+			$data['title'] = 'Login Error';
+			$data['msg'] = 'There was an error while checking your credentials.<br><br>';
+			echo view('status/status_view.php', $data);
+			echo view('template/footer');
+		}
+	}
+	public function add_mem() {
+		if($this->check_admin()) {
+			echo view('template/header_admin');
+			$data['states'] = $this->data_mod->get_states_array();
+			$data['lic'] = $this->data_mod->get_lic();
+
+			$db    = \Config\Database::connect();
+			// Call stored procedure directly
+			$query = $db->query('CALL Get_Mem_Types()');
+			$types = $query->getResultArray();
+	
+			// IMPORTANT: free the result set to avoid "commands out of sync"
+			$query->freeResult();
+			while ($db->connID->more_results() && $db->connID->next_result()) {
+				if ($extra = $db->connID->store_result()) {
+					$extra->free();
+				}
+			}
+			$this->flushMultiResults($db);
+			$data['mem_types'] = $types;
+			echo view('admin/add_mem_view', $data);
+			echo view('template/footer_master');
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Login Error';
+			$data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer_master');
+		}
+	}
+	
+	public function edit_mem($id = null) {
+		if($this->check_admin()) {
+			echo view('template/header_admin');
+			$param['email'] =  trim($this->request->getPost('email'));
+			$param['callsign'] =  trim($this->request->getPost('callsign'));
+			$param['paym_date'] = strtotime($this->request->getPost('pay_date'));
+			$param['address'] = $this->request->getPost('address');
+			$param['city'] = $this->request->getPost('city');
+			$param['state'] = $this->request->getPost('state');
+			$param['zip'] = $this->request->getPost('zip');
+			$param['fname'] = $this->request->getPost('fname');
+			$param['lname'] = trim($this->request->getPost('lname'));
+			$param['license'] = $this->request->getPost('sel_lic');
+			$param['cur_year'] = intval(trim($this->request->getPost('cur_year')));
+			$param['mem_since'] = trim($this->request->getPost('mem_since'));
+			$param['w_phone'] = $this->request->getPost('w_phone');
+			$param['h_phone'] = $this->request->getPost('h_phone');
+			$param['comment'] = trim($this->request->getPost('comment'));
+			$param['id_mem_types'] = $this->request->getPost('id_mem_types');
+			$param['timestamp'] = time();
+			$email = $this->request->getPost('email');
+			filter_var($email, FILTER_VALIDATE_EMAIL) ? $param['email'] = $email : $param['email'] = 'none';
+			$this->request->getPost('arrl') == 'on' ? $param['arrl_mem'] = 'TRUE' : $param['arrl_mem'] = 'FALSE';
+			$this->request->getPost('hard_news') == 'on' ? $param['hard_news'] = 'TRUE' : $param['hard_news'] = 'FALSE';
+			$this->request->getPost('dir') == 'on' ? $param['hard_dir'] = 'TRUE' : $param['hard_dir'] = 'FALSE';
+			$this->request->getPost('mem_card') == 'on' ? $param['mem_card'] = 'TRUE' : $param['mem_card'] = 'FALSE';
+			$this->request->getPost('dir_ok') == 'on' ? $param['ok_mem_dir'] = 'TRUE' : $param['ok_mem_dir'] = 'FALSE';
+
+			$param['id'] = $id;
+
+			if ($this->staff_mod->edit_mem($param)) {
+				$this->show_members();
+			}
+			else {
+				$data['title'] = 'Douplicate Entry Error!';
+				$data['msg'] = 'This is duplicate entry. The member ' . $param['lname'] . ' with callsign ' . $param['callsign'] . ' is already in the database.<br><br>';
+				$data['msg'] .= 'Go back to ' . anchor('members', 'members listing');
+				echo view('status/status_view', $data);
+			}
+			echo view('template/footer_master');
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+	}
+	private function flushMultiResults($db): void
+    {
+        // Clear any remaining result sets after CALL so subsequent queries run cleanly
+        $conn = $db->connID; // MySQLi
+        if (method_exists($conn, 'more_results')) {
+            while ($conn->more_results() && $conn->next_result()) {
+                $extra = $conn->use_result();
+                if ($extra instanceof \mysqli_result) {
+                    $extra->free();
+                }
+            }
+        }
+    }
+
+	public function show_members() {
+		if($this->check_admin()) {
+			echo view('template/header_admin');
+			$db    = \Config\Database::connect();
+			$pager = Services::pager();
+
+			// Sorting (whitelist)
+			$allowedSort = ['id_members','fname','lname','email','callsign'];
+			$sort = $this->request->getGet('sort') ?? 'lname';
+			if (!in_array($sort, $allowedSort, true)) $sort = 'lname';
+
+			$dir  = strtoupper($this->request->getGet('dir') ?? 'ASC');
+			$dir  = in_array($dir, ['ASC','DESC'], true) ? $dir : 'ASC';
+
+			// Pagination
+			$perPage = 17;
+			$page    = max(1, (int)($this->request->getGet('page') ?? 1));
+			$offset  = ($page - 1) * $perPage;
+
+			// Filter: cur_year >= current year
+			$now  = Time::now('America/Los_Angeles');
+			$year = (int)$now->format('Y');
+
+			// 1) Total rows via SP
+			$total = 0;
+			$res   = $db->query('CALL CountMembers(?)', [$year]);
+			if ($res) {
+				$row = $res->getRowArray();
+				$total = (int)($row['total'] ?? 0);
+				$totalMems = $total;
+				$res->freeResult();
+			}
+			$this->flushMultiResults($db);
+
+			// 2) Page rows via SP
+			$members = [];
+			$res2 = $db->query('CALL GetMembersPaged(?,?,?,?,?)', [$year, $sort, $dir, $perPage, $offset]);
+			if ($res2) {
+				$members = $res2->getResultArray();
+				$res2->freeResult();
+			}
+			$this->flushMultiResults($db);	
+
+			// 3) Page rows for deactivated
+			$deact = [];
+			$res3 = $db->query('CALL GetMembers99()');
+			if ($res3) {
+				$deact = $res3->getResultArray();
+				$res3->freeResult();
+			}
+			$this->flushMultiResults($db);
+
+			// 4) Page rows for receiving the Carrier
+			$carr = [];
+			$res4 = $db->query('CALL GetHardNewsMembers()');
+			if ($res4) {
+				$carr = $res4->getResultArray();
+				$res4->freeResult();
+			}
+			$this->flushMultiResults($db);
+
+			// 5) Page rows for the silent keys
+			$silents = [];
+			$res5 = $db->query('CALL GetSilentKeys()');
+			if ($res5) {
+				$silents = $res5->getResultArray();
+				$res5->freeResult();
+			}
+			$this->flushMultiResults($db);
+			
+			// Call stored procedure directly
+			$query = $db->query('CALL Get_Mem_Types()');
+			$types = $query->getResultArray();
+	
+			// IMPORTANT: free the result set to avoid "commands out of sync"
+			$query->freeResult();
+			while ($db->connID->more_results() && $db->connID->next_result()) {
+				if ($extra = $db->connID->store_result()) {
+					$extra->free();
+				}
+			}
+			$this->flushMultiResults($db);
+
+			$licence = array('SWL', 'Technician', 'General', 'Advanced', 'Amateur Extra');
+
+			// All U.S. state abbreviations
+			$states = [
+				'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+				'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+				'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+				'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+				'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+			];
+
+			// Build pager HTML (we’re not using Model::paginate())
+			$data = [
+				'silents' => $silents,
+				'carr' => $carr,
+				'deact' => $deact,
+				'members'    => $members,
+				'pager'      => $pager,        // keep if you want, not used directly
+				'sort'       => $sort,
+				'dir'        => $dir,
+				'page'       => $page,
+				'total'      => $total,
+				'perPage'    => $perPage,
+				'forYear'	=> $year,
+				'numMems'	=> $totalMems,
+				'lic'	=> $licence,
+				'types' => $types, 
+				'states' => $states
+			];
+
+
+			echo view('admin/members_view', $data);
+			echo view('template/footer_master');
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+	}
+
+	public function show_all_members() {
+		if($this->check_admin()) {
+			echo view('template/header_admin');
+			$db    = \Config\Database::connect();
+			$pager = Services::pager();
+
+			// Sorting (whitelist)
+			$allowedSort = ['id_members','fname','lname','email','callsign'];
+			$sort = $this->request->getGet('sort') ?? 'lname';
+			if (!in_array($sort, $allowedSort, true)) $sort = 'lname';
+
+			$dir  = strtoupper($this->request->getGet('dir') ?? 'ASC');
+			$dir  = in_array($dir, ['ASC','DESC'], true) ? $dir : 'ASC';
+
+			// Pagination
+			$perPage = 17;
+			$page    = max(1, (int)($this->request->getGet('page') ?? 1));
+			$offset  = ($page - 1) * $perPage;
+
+			// Filter: cur_year >= current year
+			$year = 0;
+
+			// 1) Total rows via SP
+			$total = 0;
+			$res   = $db->query('CALL CountMembers(?)', [$year]);
+			if ($res) {
+				$row = $res->getRowArray();
+				$total = (int)($row['total'] ?? 0);
+				$totalMems = $total;
+				$res->freeResult();
+			}
+			$this->flushMultiResults($db);
+
+			// 2) Page rows via SP
+			$members = [];
+			$res2 = $db->query('CALL GetMembersPaged(?,?,?,?,?)', [$year, $sort, $dir, $perPage, $offset]);
+			if ($res2) {
+				$members = $res2->getResultArray();
+				$res2->freeResult();
+			}
+			$this->flushMultiResults($db);
+
+			// 3) Page rows for deactivated
+			$deact = [];
+			$res3 = $db->query('CALL GetMembers99()');
+			if ($res3) {
+				$deact = $res3->getResultArray();
+				$res3->freeResult();
+			}
+			$this->flushMultiResults($db);
+
+			// 4) Page rows for receiving the Carrier
+			$carr = [];
+			$res4 = $db->query('CALL GetHardNewsMembers()');
+			if ($res4) {
+				$carr = $res4->getResultArray();
+				$res4->freeResult();
+			}
+			$this->flushMultiResults($db);
+
+			// 5) Page rows for the silent keys
+			$silents = [];
+			$res5 = $db->query('CALL GetSilentKeys()');
+			if ($res5) {
+				$silents = $res5->getResultArray();
+				$res5->freeResult();
+			}
+			$this->flushMultiResults($db);
+
+			// Call stored procedure directly
+			$query = $db->query('CALL Get_Mem_Types()');
+			$types = $query->getResultArray();
+	
+			// IMPORTANT: free the result set to avoid "commands out of sync"
+			$query->freeResult();
+			while ($db->connID->more_results() && $db->connID->next_result()) {
+				if ($extra = $db->connID->store_result()) {
+					$extra->free();
+				}
+			}
+			$this->flushMultiResults($db);
+
+			$licence = array('SWL', 'Technician', 'General', 'Advanced', 'Amateur Extra');
+
+			// All U.S. state abbreviations
+			$states = [
+				'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+				'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+				'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+				'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+				'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+			];
+
+			// Build pager HTML (we’re not using Model::paginate())
+			$data = [
+				'silents' => $silents,
+				'carr' => $carr,
+				'deact' => $deact,
+				'members'    => $members,
+				'pager'      => $pager,        // keep if you want, not used directly
+				'sort'       => $sort,
+				'dir'        => $dir,
+				'page'       => $page,
+				'total'      => $total,
+				'perPage'    => $perPage,
+				'forYear'	=> $year,
+				'numMems'	=> $totalMems,
+				'lic'	=> $licence,
+				'types' => $types, 
+				'states' => $states
+			];
+
+			echo view('admin/members_view', $data);
+			echo view('template/footer_master');
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+	}
+
+	public function parent(int $id = null) {
+		if($this->check_admin()) {
+			$db  = \Config\Database::connect();
+			$res = $db->query('CALL GetMemberById(?)', [$id]);
+
+			$parent = $res ? $res->getRowArray() : null;
+			if ($res) $res->freeResult();
+			$this->flushMultiResults($db);
+
+			if (!$parent) {
+				return $this->response->setStatusCode(404)
+					->setJSON(['status' => 'error', 'message' => 'Parent not found']);
+			}
+			$fullName = (string)($parent['fname'] ?? ' ') . ' ' . (string)($parent['lname'] ?? ' ');
+
+			return $this->response->setJSON([
+				'status' => 'ok',
+				'data'   => [
+				'id_members'  => (int)$parent['id_members'],
+				'fname' => (string)($parent['fname'] ?? ''),
+				'lname'  => (string)($parent['lname'] ?? ''),
+				'fullname'  => $fullName,
+				'email'      => (string)($parent['email'] ?? ''),
+				'callsign'      => (string)($parent['callsign'] ?? ''),
+				]
+			]);
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+    }
+	public function children(int $parentId = null)
+    {
+		if($this->check_admin()) {
+			$pid = (int)($parentId ?? $this->request->getGet('parent_id') ?? 0);
+			if ($pid <= 0) {
+				return $this->response->setStatusCode(400)->setJSON(['error' => 'Invalid parent_id']);
+			}
+
+			$db = \Config\Database::connect();
+			$q  = $db->query('CALL GetChildMembers(?)', [$pid]);
+			$rows = $q->getResultArray() ?? [];
+
+			if ($q) $q->freeResult();
+			$this->flushMultiResults($db);
+
+			return $this->response->setJSON(['children' => $rows]);
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+    }
+	public function add_fam_mem(int $id = null) {
+		if($this->check_admin()) {
+			$param['parent_primary'] = $id;
+			$param['callsign'] =  trim($this->request->getPost('callsign'));
+			$param['fname'] = $this->request->getPost('fname');
+			$param['lname'] = trim($this->request->getPost('lname'));
+			$param['license'] = $this->request->getPost('sel_lic');
+			$param['w_phone'] = $this->request->getPost('w_phone');
+			$param['h_phone'] = $this->request->getPost('h_phone');
+			$param['id_mem_types'] = $this->request->getPost('id_mem_types');
+			$param['mem_type'] = $this->staff_mod->get_mem_types()[$param['id_mem_types']];
+			$param['active'] = TRUE;
+			$param['mem_since'] = date('Y', time());
+			$param['comment'] = $this->request->getPost('comment');
+			$email = $this->request->getPost('email');
+			filter_var($email, FILTER_VALIDATE_EMAIL) ? $param['email'] = $email : $param['email'] = 'none';
+			$this->request->getPost('arrl') == 'on' ? $param['arrl_mem'] = 'TRUE' : $param['arrl_mem'] = 'FALSE';
+			$retstat = $this->mem_mod->add_fam_mem($param);
+			if($retstat['flag']) {$this->show_members();} 
+			else {
+				$data['title'] = 'Database Error';
+				$data['msg'] = $retstat['err'];
+				echo view('status/status_view.php', $data);
+				echo view('template/footer');
+			}
+		}
+		else {
+			echo view('template/header');
+			$this->login_mod->logout();
+			$data['title'] = 'Login Error';
+			$data['msg'] = 'There was an error while checking your credentials.<br><br>';
+			echo view('status/status_view.php', $data);
+			echo view('template/footer');
+		}
+	}
+	public function add_fam_existing(int $id = null) {
+		if($this->check_admin()) {
+			$param['parent_primary'] = $id;
+			$param['id_members'] = $this->request->getPost('id_existing_mem');
+			$param['id_mem_types'] = $this->request->getPost('id_mem_type');
+			$this->mem_mod->add_fam_existing($param);
+			$this->show_members();
+		}
+		else {
+			echo view('template/header');
+			$this->login_mod->logout();
+			$data['title'] = 'Login Error';
+			$data['msg'] = 'There was an error while checking your credentials.<br><br>';
+			echo view('status/status_view.php', $data);
+			echo view('template/footer');
+		}
+	}
+	public function delete_mem(int $id = null) {
+		if($this->check_admin()) {
+			$this->staff_mod->delete_mem($id);
+			$this->show_members();
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+	}
+	public function purge_mem(int $id = null) {
+		if($this->check_admin()) {
+			$this->staff_mod->purge_mem($id);
+			$this->show_members();
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+	}
+	public function un_delete_mem(int $id) {
+		if($this->check_admin()) {
+			$this->staff_mod->un_delete_mem($id);
+			$this->show_members();
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+	}	
+	public function set_silent(int $id = null) {
+		if($this->check_admin()) {
+			$param['id'] = $id;
+			$param['silent_date'] =  time();
+			$param['usr_type'] = 98;
+			$param['silent_year'] = date('Y', $param['silent_date']);
+			$this->staff_mod->set_silent($param);
+			echo 'done';
+			$this->show_members();
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+	}
+
+	public function load_silent(int $id = null) {
+		if($this->check_admin()) {
+			$param['silent_date'] = strtotime($this->request->getPost('silent_date'));
+			$param['silent_year'] = date('Y', $param['silent_date']);
+			$param['id'] = $id;
+			$this->staff_mod->set_silent($param);
+			$this->show_members();
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+	}
+	public function unset_silent(int $id = null) {
+		if($this->check_admin()) {
+			$this->staff_mod->unset_silent($id);
+			$this->show_members();
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+			echo view('template/footer');
+		}
+	}
+	public function man_payment(int $id = null) {
+		if($this->check_admin()) {
+			echo view('template/header_admin');
+			$param = array();
+
+			$param['id_member'] = $id;
+			$param['amount'] = $this->request->getPost('amount');
+			$param['donation'] = $this->request->getPost('donation');
+			$param['don_rep'] = $this->request->getPost('don_rep');
+			$param['paydate'] = $this->request->getPost('pay_date');
+			$param['carrier'] = $this->request->getPost('carrier');
+			
+			$status = $this->admin_mod->man_payment($param);
+			if($status) {
+				$data['title'] = 'Manual Payment';
+				$data['msg'] = 'Manual payment was successfuly processed for ID member: ' . $param['id_member'] . '<br><br>';
+				echo view('status/status_view', $data);
+			}
+			else {
+				$data['title'] = 'Manual Payment - Error!';
+				$data['msg'] = 'There was an error while processing the transaction. Go back to home page ' . anchor(base_url(), 'here') .
+				 ' to go to home page<br><br>';
+				echo view('status/status_view', $data);
+			}
+			echo view('template/footer_master');
+		}
+		else {
+			echo view('template/header');
+			 $data['title'] = 'Login Error';
+			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			 echo view('status/status_view', $data);
+			 echo view('template/footer');
+		}
+	}
+
+	public function export_all_mems(): \CodeIgniter\HTTP\ResponseInterface
+    {
+        if($this->check_admin()) {
+			$rows  = $this->mem_mod->getAllMemData();
+
+			$filename = 'members_' . date('Y-m-d_H-i') . '.csv';
+
+			// Build CSV into a temp stream, then return it as the response body.
+			$fp = fopen('php://temp', 'r+');
+
+			// Optional: UTF-8 BOM for Excel compatibility
+			fwrite($fp, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+			if (! empty($rows)) {
+				// Header row from array keys
+				fputcsv($fp, array_keys($rows[0]));
+				// Data rows
+				foreach ($rows as $row) {
+					fputcsv($fp, $row);
+				}
+			} else {
+				fputcsv($fp, ['No data']);
+			}
+
+			rewind($fp);
+			$csv = stream_get_contents($fp);
+			fclose($fp);
+
+			return $this->response
+				->setHeader('Content-Type', 'text/csv')
+				->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+				->setHeader('Pragma', 'no-cache')
+				->setHeader('Expires', '0')
+				->setBody($csv);
+		}
+		else {
+			echo view('template/header');
+			 $data['title'] = 'Login Error';
+			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			 echo view('status/status_view', $data);
+			 echo view('template/footer');
+		}
+    }	
+	
+	public function export_cur_emails() {
+		if($this->check_admin()) {
+			$rows = $this->mem_mod->getCurEmails();
+
+			$filename = 'cur-emails.txt';
+
+			// Build text: one email per line
+			$emails = array_map(fn($r) => $r['email'], $rows);
+			$txt = implode(',', $emails);
+
+			return $this->response
+				->setHeader('Content-Type', 'text/plain')
+				->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+				->setBody($txt);
+		}
+		else {
+			echo view('template/header');
+			 $data['title'] = 'Login Error';
+			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			 echo view('status/status_view', $data);
+			 echo view('template/footer');
+		}
+    }
+
+	public function export_due_emails()
+    {
+        if($this->check_admin()) {
+			$rows  = $this->mem_mod->getDueEmails();
+
+			$filename = 'due-emails.txt';
+
+			// Convert to simple text list
+			$emails = array_map(fn($r) => $r['email'], $rows);
+			$content = implode(',', $emails);
+
+			return $this->response
+				->setHeader('Content-Type', 'text/plain')
+				->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+				->setBody($content);
+		}
+		else {
+			echo view('template/header');
+			 $data['title'] = 'Login Error';
+			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			 echo view('status/status_view', $data);
+			 echo view('template/footer');
+		}
+    }
+	public function remove_fam_mem(int $id) {
+		if($this->check_admin()) {
+			$this->mem_mod->remove_fam_mem($id);
+			$this->show_members();
+		}
+		else {
+			echo view('template/header');
+			 $data['title'] = 'Login Error';
+			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			 echo view('status/status_view', $data);
+			 echo view('template/footer');
+		}
+	}
+}

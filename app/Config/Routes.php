@@ -32,6 +32,7 @@ $routes->get('edit-users', 'Master::edit_users');
 $routes->get('ci-ver', 'Home::index');
 $routes->get('logout', 'Login::logout');
 $routes->get('master', 'Master::index');
+$routes->get('admin', 'Admin::index');
 $routes->get('faqs', 'Home::faqs');
 $routes->get('master-faqs', 'Master::master_faqs');
 $routes->get('deactivate/(:num)', 'Master::activate/$1');
@@ -49,6 +50,10 @@ $routes->get('member/rem-fam/(:num)', 'Member::remove_fam_mem/$1');
 
 $routes->get('members', 'Master::show_members');
 $routes->get('all-members', 'Master::show_all_members');
+
+$routes->get('admin-members', 'Admin::show_members');
+$routes->get('admin-all-members', 'Admin::show_all_members');
+
 $routes->get('terms', 'Home::terms');
 $routes->get('export-all-mems', 'Master::export_all_mems');
 $routes->get('export-cur-emails', 'Master::export_cur_emails');

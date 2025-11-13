@@ -27,10 +27,9 @@
           $displayAddress = implode(' • ', $parts);
           // Contact chips (masked values arrive as '' per proc)
           $contacts = array_filter([
-            !empty($r['cell'])    ? 'Cell: '   . esc($r['cell'])    : null,
             !empty($r['email'])   ? 'Email: '  . esc($r['email'])   : null,
-            !empty($r['w_phone']) ? 'Work: '   . esc($r['w_phone']) : null,
-            !empty($r['h_phone']) ? 'Home: '   . esc($r['h_phone']) : null,
+            !empty($r['w_phone']) ? 'Cell: '   . esc($r['w_phone']) : null,
+            !empty($r['h_phone']) ? 'Other: '   . esc($r['h_phone']) : null,
           ]);
         ?>
         <div class="list-group-item dir-row <?= $isFamily ? 'family' : '' ?>">
