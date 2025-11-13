@@ -26,7 +26,8 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <?php foreach($users as $user) {?>
+                    <?php foreach($users as $user) {
+                    if($user['id'] != 1 ) { ?>
                     <tr>
                         <td><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#editUser<?php echo $user['id']; ?>"><?php echo $user['fname'] . ' ' . $user['lname']; ?></a>
                         <?php include 'modal_update_user.php'; ?></td>
@@ -61,7 +62,7 @@
                         <td class="text-center"><a href="#" data-bs-toggle="modal" data-bs-target="#delUsr<?php echo $user['id']; ?>"><i class="bi bi-trash"></i></a>
                         <?php include 'mod_del_user.php'; ?></td>
                     </tr>
-                    <?php }?>
+                    <?php } }?>
                     </tbody>
                 </table>
                 </div>

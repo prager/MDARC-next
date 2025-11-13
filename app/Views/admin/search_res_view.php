@@ -27,13 +27,18 @@
                 <tr>
                   <td><?= esc($m['id_members'] ?? $m['id_member'] ?? '') ?></td>
                   <td>
-                    <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#editMem<?= esc($m['id_members']) ?>"><?= esc($m['lname'] ?? '') . ', ' .  esc($m['fname'] ?? '') ?></a>
+                    <?php if($m['id_users'] != 1) { ?>
+                      <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#editMem<?= esc($m['id_members']) ?>"><?= esc($m['lname'] ?? '') . ', ' .  esc($m['fname'] ?? '') ?></a>
+                    <?php } else { ?>
+                    <?= esc($m['lname'] ?? '') . ', ' .  esc($m['fname'] ?? '') ?> 
+                    <?php } ?> 
                   </td>
                   <?php include 'modal_update_mem.php'; ?>
                   <td><?= esc($m['cur_year'] ?? '') ?></td>
                   <td><?= esc($m['callsign'] ?? '') ?></td>
                   <td>
                     <?php
+                    if($m['id_users'] != 1) {
                     // Decide which ID the modal should load
                     $parentId = 0;
                     if ((int)($m['id_mem_types'] ?? 0) === 2) {
@@ -54,16 +59,26 @@
                       </a>
                     <?php else: ?>
                       <?= esc($m['type_description'] ?? '') ?>
-                    <?php endif; ?>
+                    <?php endif; } else { ?>
+                      <?= esc($m['type_description'] ?? '') ?>
+                    <?php } ?>
                   </td>
                   <td><?= esc($m['license'] ?? '') ?></td>
                   <td><?= esc($m['email'] ?? '') ?></td>
                   <td>
+                    <?php if($m['id_users'] != 1) { ?>
                     <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#manPayment<?= esc($m['id_members']) ?>">Make Payment</a>
-                    <?php include 'mod_man_payment.php'; ?>
+                    <?php } else { ?>
+                      Make payment
+                    <?php } ?>
                   </td>
+                  <?php include 'mod_man_payment.php'; ?>
                   <td class="text-center">
+                  <?php if($m['id_users'] != 1) { ?>
                       <a href="#" data-bs-toggle="modal" data-bs-target="#delMem<?= esc($m['id_members']) ?>"><i class="bi bi-trash"></i></a>
+                  <?php } else { ?>
+                    <i class="bi bi-trash"></i>
+                    <?php } ?>  
                   </td>
                 </tr>
               <?php endforeach; ?>

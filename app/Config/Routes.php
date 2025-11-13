@@ -15,6 +15,7 @@ $routes->post('master-edit-faq', 'Master::edit_faq');
 $routes->post('load-admin/(:num)', 'Master::load_admin/$1');
 $routes->post('reset-user/(:num)', 'Master::reset_user/$1');
 $routes->post('master-search', 'Master::search');
+$routes->post('admin-search', 'Admin::search');
 $routes->post('master/add-fam/(:num)', 'Master::add_fam_mem/$1');
 $routes->post('master/add-fam-existing/(:num)', 'Master::add_fam_existing/$1');
 $routes->post('edit-mem/(:num)', 'Master::edit_mem/$1');
@@ -29,6 +30,7 @@ $routes->post('do-update', 'Member::do_update');
 
 $routes->get('delete-faq/(:num)', 'Master::delete_faq/$1');
 $routes->get('edit-users', 'Master::edit_users');
+$routes->get('admin-edit-users', 'Admin::edit_users');
 $routes->get('ci-ver', 'Home::index');
 $routes->get('logout', 'Login::logout');
 $routes->get('master', 'Master::index');

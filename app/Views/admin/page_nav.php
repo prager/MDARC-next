@@ -22,12 +22,12 @@
                 // helper to keep sort/dir in URLs
                 if($forYear != 0) {
                     function pageUrl($p, $sort, $dir) {
-                        return site_url('members?sort=' . urlencode($sort) . '&dir=' . urlencode($dir) . '&page=' . (int)$p);
+                        return site_url('admin-members?sort=' . urlencode($sort) . '&dir=' . urlencode($dir) . '&page=' . (int)$p);
                     }
                 }
                 else {
                     function pageUrl($p, $sort, $dir) {
-                        return site_url('all-members?sort=' . urlencode($sort) . '&dir=' . urlencode($dir) . '&page=' . (int)$p);
+                        return site_url('admin-all-members?sort=' . urlencode($sort) . '&dir=' . urlencode($dir) . '&page=' . (int)$p);
                     }
                 }
 

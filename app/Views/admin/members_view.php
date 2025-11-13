@@ -26,7 +26,7 @@
           <div class="row">
             <div class="col-lg-4">
                 <?php if($forYear != 0 && $forYear != 99) { ?>
-                  <a href="<?php echo base_url() . 'index.php/members'; ?>" class="text-decoration-none"><h4 class="mb-1 text-warning">Current Members</h4></a>
+                  <a href="<?php echo base_url() . 'index.php/admin-members'; ?>" class="text-decoration-none"><h4 class="mb-1 text-warning">Current Members</h4></a>
                     <p> Total of <?php echo $numMems; ?> members. Click for <a href="<?php echo base_url() . 'index.php/all-members'; ?>" class="text-decoration-none">All Members</a></p>
                 <?php } else { ?>
                     <h4 class="mb-1">All Members</h4>
@@ -90,8 +90,13 @@
                         <?php foreach ($members as $m): ?>
                           <tr>
                             <td><?= esc($m['id_members'] ?? '') ?></td>
-                            <td><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#editMem<?= esc($m['id_members']) ?>"><?= esc($m['lname'] ?? '') . ', ' .  esc($m['fname'] ?? '') ?></a>
-                          </td>
+                            <td>
+                              <?php if($m['id_users'] != 1) { ?>
+                              <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#editMem<?= esc($m['id_members']) ?>"><?= esc($m['lname'] ?? '') . ', ' .  esc($m['fname'] ?? '') ?></a>
+                              <?php } else { ?>
+                              <?= esc($m['lname'] ?? '') . ', ' .  esc($m['fname'] ?? '') ?>
+                              <?php } ?>  
+                            </td>
                           <?php include 'modal_update_mem.php'; ?>
                             <td><?= esc($m['email'] ?? '') ?></td>
                             <td><?= esc($m['callsign'] ?? '') ?></td>
@@ -99,31 +104,38 @@
                             <td><?= esc($m['mem_since'] ?? '') ?></td>
                             <td>
                               <?php
-                                // Decide which ID the modal should load
-                                $parentId = 0;
-                                if ((int)($m['id_mem_types'] ?? 0) === 2) {
-                                    // Primary member: show their own children
-                                    $parentId = (int)($m['id_members'] ?? 0);
-                                } elseif (!empty($m['parent_primary'])) {
-                                    // Child member: open the family using the parent's id
-                                    $parentId = (int)$m['parent_primary'];
-                                }
-                                if ($parentId > 0): ?>
-                                  <a href="#"
-                                    class="family-link text-decoration-none"
-                                    data-parent-id="<?= esc($parentId) ?>"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#parentModal">
+                                if($m['id_users'] != 1) {
+                                  // Decide which ID the modal should load
+                                  $parentId = 0;
+                                  if ((int)($m['id_mem_types'] ?? 0) === 2) {
+                                      // Primary member: show their own children
+                                      $parentId = (int)($m['id_members'] ?? 0);
+                                  } elseif (!empty($m['parent_primary'])) {
+                                      // Child member: open the family using the parent's id
+                                      $parentId = (int)$m['parent_primary'];
+                                  }
+                                  if ($parentId > 0): ?>
+                                    <a href="#"
+                                      class="family-link text-decoration-none"
+                                      data-parent-id="<?= esc($parentId) ?>"
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#parentModal">
+                                      <?= esc($m['description'] ?? '') ?>
+                                    </a>
+                                  <?php else: ?>
                                     <?= esc($m['description'] ?? '') ?>
-                                  </a>
-                                <?php else: ?>
+                                  <?php endif; } else { ?>
                                   <?= esc($m['description'] ?? '') ?>
-                                <?php endif; ?>
+                                  <?php } ?>
                             </td>
                             <td><?php echo date('m/d/Y', $m['paym_date']); ?></td>
                             <td class="text-center">
+                              <?php if($m['id_users'] != 1) { ?>
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#delMem<?= esc($m['id_members']) ?>"><i class="bi bi-trash"></i></a>
                                 <?php include 'mod_del_mem.php'; ?>
+                                <?php } else { ?>
+                                <i class="bi bi-trash"></i>
+                                <?php } ?>
                             </td>
                           </tr>
                         <?php endforeach; ?>
