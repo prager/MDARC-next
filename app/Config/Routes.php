@@ -35,6 +35,7 @@ $routes->get('ci-ver', 'Home::index');
 $routes->get('logout', 'Login::logout');
 $routes->get('master', 'Master::index');
 $routes->get('admin', 'Admin::index');
+$routes->get('staff', 'Staff::index');
 $routes->get('faqs', 'Home::faqs');
 $routes->get('master-faqs', 'Master::master_faqs');
 $routes->get('deactivate/(:num)', 'Master::activate/$1');
