@@ -36,6 +36,8 @@ $routes->get('logout', 'Login::logout');
 $routes->get('master', 'Master::index');
 $routes->get('admin', 'Admin::index');
 $routes->get('staff', 'Staff::index');
+$routes->get('staff-members', 'Staff::show_members');
+$routes->get('staff-all-members', 'Staff::show_all_members');
 $routes->get('faqs', 'Home::faqs');
 $routes->get('master-faqs', 'Master::master_faqs');
 $routes->get('deactivate/(:num)', 'Master::activate/$1');
@@ -72,4 +74,3 @@ $routes->get('member/(:any)', 'Member::get_member/$1');
 $routes->get('member', 'Member::get_member');
 $routes->get('show-update', 'Member::show_update');
 $routes->get('mem_print-dir/(:num)', 'Member::print_dir/$1');
-
