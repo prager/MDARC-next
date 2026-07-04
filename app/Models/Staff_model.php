@@ -3,6 +3,8 @@
 use CodeIgniter\Model;
 
 class Staff_model extends Model {
+    protected $table = 'tMembers';
+    protected $primaryKey = 'id_members';
     public $db;
     public $session;
     protected function initialize()
@@ -156,7 +158,6 @@ class Staff_model extends Model {
     public function get_fam_mems($id) {
       $db      = \Config\Database::connect();
       $builder = $db->table('tMembers');
-      $db->close();
       $builder->where('parent_primary', $id);
       $retarr = array();
       $retarr['fam_mems'] = array();
@@ -165,12 +166,64 @@ class Staff_model extends Model {
         $builder->where('parent_primary', $id);
         $res = $builder->get()->getResult();
         foreach($res as $mem) {
-          $fam_mem = $this->get_fam_mem($mem->id_members);
           array_push($retarr['fam_mems'], $this->get_fam_mem($mem->id_members));
         }
       }
       count($retarr['fam_mems']) > 0 ? $retarr['fam_flag'] = TRUE : $retarr['fam_flag'] = FALSE;
+      $db->close();
       return $retarr;
+    }
+
+    public function get_fam_mem($id) {
+      $db      = \Config\Database::connect();
+      $builder = $db->table('tMembers');
+      $builder->where('id_members', $id);
+      $elem = array();
+      if($builder->countAllResults() > 0) {
+        $builder->resetQuery();
+        $builder->where('id_members', $id);
+        $member = $builder->get()->getRow();
+        $elem['id_members'] = $id;
+        $elem['carrier'] = trim(strtoupper($member->hard_news ?? ''));
+        $elem['dir'] = trim(strtoupper($member->hard_dir ?? ''));
+        $elem['arrl'] = trim(strtoupper($member->arrl_mem ?? ''));
+        $elem['mem_card'] = trim(strtoupper($member->mem_card ?? ''));
+        $member->h_phone == NULL ? $elem['h_phone'] = '000-000-0000' : $elem['h_phone'] = $member->h_phone;
+        $member->w_phone == NULL ? $elem['w_phone'] = '000-000-0000' : $elem['w_phone'] = $member->w_phone;
+        $member->comment == NULL ? $elem['comment'] = '' : $elem['comment'] = $member->comment;
+        $elem['phone_unlisted'] = $member->h_phone_unlisted;
+        $elem['cell_unlisted'] = $member->w_phone_unlisted;
+        $elem['email_unlisted'] = $member->email_unlisted;
+        $elem['fname'] = $member->fname;
+        $elem['lname'] = $member->lname;
+        $member->address == NULL ? $elem['address'] = 'N/A' : $elem['address'] = $member->address;
+        $member->city == NULL ? $elem['city'] = 'N/A' : $elem['city'] = $member->city;
+        $member->state == NULL ? $elem['state'] = 'CA' : $elem['state'] = $member->state;
+        $member->zip == NULL ? $elem['zip'] = 'N/A' : $elem['zip'] = $member->zip;
+        $elem['active'] = $member->active;
+        $member->cur_year == NULL ? $elem['cur_year'] = 'N/A' : $elem['cur_year'] = $member->cur_year;
+        $elem['id_mem_types'] = $member->id_mem_types;
+        $elem['mem_type'] = $member->mem_type;
+        $elem['callsign'] = $member->callsign;
+        $elem['license'] = $member->license;
+        $elem['hard_news'] = $member->hard_news;
+        $elem['spouse_name'] = $member->spouse_name;
+        $elem['spouse_call'] = $member->spouse_call;
+        $elem['pay_date'] = date('Y-m-d', $member->paym_date);
+        $elem['pay_date_file'] = date('Y/m/d', $member->paym_date);
+        $elem['silent_date'] = '';
+        $elem['parent_primary'] = $member->parent_primary;
+        $member->mem_since == NULL ? $elem['mem_since'] = 'N/A' : $elem['mem_since'] = $member->mem_since;
+        $member->email == NULL ? $elem['email'] = 'N/A' : $elem['email'] = $member->email;
+        $elem['ok_mem_dir'] = $member->ok_mem_dir;
+        $elem['silent_year'] = $member->silent_year;
+        $member->usr_type == 98 ? $elem['silent'] = TRUE : $elem['silent'] = FALSE;
+      }
+      else {
+        $elem = NULL;
+      }
+      $db->close();
+      return $elem;
     }
 
 /**
@@ -340,4 +393,65 @@ public function unset_silent($id) {
   'silent_year' => 0), ['id_members' => $id]);
   $db->close();
 }
+
+ /**
+  * Gets directory data
+  */
+  public function get_dir_data($cur_yr) {
+    $mem_types = $this->get_mem_types();
+    $db      = \Config\Database::connect();
+    $builder = $db->table('tMembers');
+    $res = $builder->get()->getResult();
+    $all_cur_members = array();
+    //The monster loop harvesting all the members data
+        foreach($res as $member) {
+          $elem = array();
+          $elem['id'] = $member->id_members;
+
+    //set the true or false values for boolean db entries
+          $member->h_phone == NULL ? $elem['h_phone'] = '000-000-0000' : $elem['h_phone'] = $member->h_phone;
+          $member->w_phone == NULL ? $elem['w_phone'] = '000-000-0000' : $elem['w_phone'] = $member->w_phone;
+          $elem['phone_unlisted'] = $member->h_phone_unlisted;
+          $elem['cell_unlisted'] = $member->w_phone_unlisted;
+          $elem['email_unlisted'] = $member->email_unlisted;
+          $elem['fname'] = $member->fname;
+          $elem['lname'] = $member->lname;
+          $member->address == NULL ? $elem['address'] = 'N/A' : $elem['address'] = $member->address;
+          $member->city == NULL ? $elem['city'] = 'N/A' : $elem['city'] = $member->city;
+          $member->state == NULL ? $elem['state'] = 'CA' : $elem['state'] = $member->state;
+          $member->zip == NULL ? $elem['zip'] = '00000' : $elem['zip'] = $member->zip;
+          $elem['id_mem_types'] = $member->id_mem_types;
+          $elem['callsign'] = $member->callsign;
+          $elem['license'] = $member->license;
+          $elem['spouse_name'] = $member->spouse_name;
+          $elem['spouse_call'] = $member->spouse_call;
+          $member->email == NULL ? $elem['email'] = 'N/A' : $elem['email'] = $member->email;
+          $elem['ok_mem_dir'] = $member->ok_mem_dir;
+          $date_from = strtotime(strval(intval($cur_yr-1)) . '-10-01');
+          $date_to = strtotime(strval($cur_yr) . '-12-31');
+          $member->silent_date > 1 ? $elem['silent_date'] = date('Y-m-d', $member->silent_date) : $elem['silent_date'] = 'No Date';
+          $elem['silent_year'] = $member->silent_year;
+          $member->usr_type == 98 ? $elem['silent'] = TRUE : $elem['silent'] = FALSE;
+    //Push all the current members including voting members (Spouse and Additional types)
+          if(($member->cur_year >= $cur_yr  && $member->silent_date == 0 && strtolower($member->ok_mem_dir ?? '') == 'true')) {
+            $fam_mems = $this->get_fam_mems($elem['id']);
+            $elem['fam_mems'] = $fam_mems['fam_mems'];
+            $elem['fam_flag'] = $fam_mems['fam_flag'];
+            array_push($all_cur_members, $elem);
+          }
+        }
+        array_multisort(array_column($all_cur_members, 'lname'), SORT_ASC, $all_cur_members);
+        $retarr['dir'] = $all_cur_members;
+
+        array_multisort(array_column($all_cur_members, 'callsign'), SORT_ASC, $all_cur_members);
+        $retarr['callsigns'] = $all_cur_members;
+
+        $param['date_start'] = time() - (60 * 60 * 24 * 30);
+				$param['date_stop'] = time();
+
+        $retarr['dir_cnt'] = count($retarr['dir']);
+
+        return $retarr;
+  }
+
 }

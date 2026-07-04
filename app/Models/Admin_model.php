@@ -5,6 +5,84 @@ use CodeIgniter\Model;
 * This model is for special functions for Master user
 */
 class Admin_model extends Model {
+    public function get_mem_types() {
+        $db      = \Config\Database::connect();
+        $builder = $db->table('tMemTypes');
+        $builder->orderBy('id_mem_types', 'DESC');
+        $types = $builder->get()->getResult();
+        $retarr = array();
+        foreach($types as $type) {
+          $retarr[$type->id_mem_types] = $type->description;
+        }
+        $db->close();
+        return $retarr;
+      }
+
+      public function get_mem_type($type) {
+        $types = $this->get_mem_types();
+        return $types[$type];
+      }
+
+      /**
+      * Adds or edits a member.
+      */
+      public function edit_mem($param) {
+        $param['mem_type'] = $this->get_mem_type($param['id_mem_types']);
+        $retval = TRUE;
+        $id = $param['id'];
+        unset($param['id']);
+        $db      = \Config\Database::connect();
+        $builder = $db->table('tMembers');
+        $builder->where('email', $param['email']);
+        $builder->where('callsign', $param['callsign']);
+        $builder->where('lname', $param['lname']);
+        $builder->where('fname', $param['fname']);
+        if($id != NULL) {
+          $builder->resetQuery();
+          $builder->update($param, ['id_members' => $id]);
+
+          $builder->resetQuery();
+          $up_arr = array('paym_date' => $param['paym_date'],
+                          'cur_year' => $param['cur_year']);
+          $builder->update($up_arr, ['parent_primary' => $id]);
+
+        }
+        elseif(($builder->countAllResults() == 0) && $this->check_dups($param)) {
+          $param['update_type'] = 'Initial insert';
+          $param['mem_type'] = 'Individual';
+          $param['mem_since'] = date('Y', time());
+          $param['cur_year'] = date('Y', time());
+          $param['ok_mem_dir'] = true;
+          if(date('m', $param['paym_date']) > 9) $param['cur_year']++;
+          $builder->resetQuery();
+          $builder->insert($param);
+        }
+        else {
+          $retval = FALSE;
+        }
+        $db->close();
+
+        return $retval;
+      }
+
+      /**
+      * Check for duplicate members within 5 years.
+      */
+      private function check_dups($param) {
+        $retval = TRUE;
+        $db      = \Config\Database::connect();
+        $builder = $db->table('old_mems_2020');
+        $res = $builder->get()->getResult();
+        foreach($res as $mem) {
+          if(($param['email'] == $mem->email) && ((date('Y', time()) - 5) > $mem->cur_year)) {
+              $retval = FALSE;
+              break;
+            }
+        }
+        $db->close();
+        return $retval;
+      }
+
     public function get_mem_cost() {
         $db      = \Config\Database::connect();    
         $builder = $db->table('payactions');

@@ -1,3 +1,21 @@
+<?php
+if (! function_exists('staff_format_date')) {
+  function staff_format_date($value, string $format = 'm/d/Y'): string
+  {
+    if ($value === null || $value === '' || $value === 0 || $value === '0') {
+      return '';
+    }
+
+    if (is_int($value) || ctype_digit((string) $value)) {
+      return date($format, (int) $value);
+    }
+
+    $timestamp = strtotime((string) $value);
+
+    return $timestamp === false ? '' : date($format, $timestamp);
+  }
+}
+?>
 <div class="modal fade" id="editMem<?= esc($m['id_members']) ?>" tabindex="-1" aria-labelledby="editMemLabel<?= esc($m['id_members']) ?>" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -5,177 +23,104 @@
         <h5 class="modal-title" id="editMemLabel<?= esc($m['id_members']) ?>"><?= esc($m['fname'] ?? '') . ' ' .  esc($m['lname'] ?? '') . ' ' .  esc($m['callsign'] ?? ''). ' / ID: ' .  esc($m['id_members'] ?? '') ?></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form action="<?php echo base_url() . 'index.php/edit-mem/'. esc($m['id_members']); ?>" method="post">
       <div class="modal-body">
       <section class="px-2">
         <div class="row">
-          <div class="col-lg py-2">
-            <label for="fname">First Name</label>
-            <input type="text" class="form-control" id="fname" name="fname" value="<?= esc($m['fname'] ?? '') ?>">
+          <div class="col-md-6 py-2">
+            <label>Name</label>
+            <p class="form-control-plaintext mb-0"><?= esc($m['lname'] ?? '') ?>, <?= esc($m['fname'] ?? '') ?></p>
           </div>
-          <div class="col-lg py-2">
-              <label for="lname">Last Name</label>
-              <input type="text" class="form-control" id="lname" name="lname" value="<?= esc($m['lname'] ?? '') ?>">
+          <div class="col-md-3 py-2">
+            <label>Callsign</label>
+            <p class="form-control-plaintext mb-0"><?= esc($m['callsign'] ?? '') ?></p>
           </div>
-          <div class="col-lg py-2">
-              <label for="callsign">Callsign</label>
-              <input type="text" class="form-control" id="callsign" name="callsign" value="<?= esc($m['callsign'] ?? '') ?>">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-lg-6 py-2">
-            <label for="sel_lic">License Type</label>
-            <select class="form-select" name="sel_lic">
-              <?php
-                foreach($lic as $license) {
-                  if($license == esc($m['license'])) { ?>
-                    <option value="<?= esc($m['license']) ?>" selected><?= esc($m['license']) ?></option>
-              <?php    }
-                  else { ?>
-                    <option value="<?php echo $license; ?>"><?php echo $license; ?></option>
-              <?php }
-                }
-              ?>
-            </select>
-          </div>
-          <div class="col-lg-6 py-2">
-            <label for="id_mem_types">Member Type </label>
-            <select id="id_mem_types" name="id_mem_types" class="form-select" required>
-              <option value="" disabled>-- Choose a Membership Type --</option>
-              <?php foreach ($types as $t): ?>
-                <option value="<?= esc($t['id_mem_types']) ?>"
-                  <?= isset($m['id_mem_types']) && $m['id_mem_types'] == $t['id_mem_types'] ? 'selected' : '' ?>>
-                  <?= esc($t['description']) ?>
-                </option>
-              <?php endforeach; ?>
-            </select>
+          <div class="col-md-3 py-2">
+            <label>Member ID</label>
+            <p class="form-control-plaintext mb-0"><?= esc($m['id_members'] ?? '') ?></p>
           </div>
         </div>
         <div class="row">
-          <div class="col-lg py-2">
-            <label for="w_phone">Cell Phone</label>
-            <input type="text" class="form-control" id="w_phone" name="w_phone" value="<?= esc($m['w_phone']) ?>">
+          <div class="col-md-4 py-2">
+            <label>License Type</label>
+            <p class="form-control-plaintext mb-0"><?= esc($m['license'] ?? '') ?></p>
           </div>
-          <div class="col-lg py-2">
-            <label for="h_phone">Home Phone</label>
-            <input type="text" class="form-control" id="h_phone" name="h_phone" value="<?= esc($m['h_phone']) ?>">
+          <div class="col-md-4 py-2">
+            <label>Member Type</label>
+            <p class="form-control-plaintext mb-0"><?= esc($m['description'] ?? '') ?></p>
           </div>
-          <div class="col-lg py-2">
-            <label for="email">Email</label>
-            <input type="email" class="form-control" id="email" name="email" value="<?= esc($m['email']) ?>">
+          <div class="col-md-4 py-2">
+            <label>Current Year</label>
+            <p class="form-control-plaintext mb-0"><?= esc($m['cur_year'] ?? '') ?></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 py-2">
+            <label>Email</label>
+            <p class="form-control-plaintext mb-0"><?= esc($m['email'] ?? '') ?></p>
+          </div>
+          <div class="col-md-4 py-2">
+            <label>Cell Phone</label>
+            <p class="form-control-plaintext mb-0"><?= esc($m['w_phone'] ?? '') ?></p>
+          </div>
+          <div class="col-md-4 py-2">
+            <label>Home Phone</label>
+            <p class="form-control-plaintext mb-0"><?= esc($m['h_phone'] ?? '') ?></p>
           </div>
         </div>
         <div class="row py-2">
           <div class="col-lg">
-            <div class="form-check">
-              <label class="form-check-label" for="arrl"> ARRL Mem </label>
-              <?php if(strtoupper(esc($m['arrl_mem'])) == 'TRUE') {?>
-                <input class="form-check-input" type="checkbox" name="arrl" checked />
-              <?php }
-                    else { ?>
-                <input class="form-check-input" type="checkbox" name="arrl" />
-              <?php } ?>
-            </div>
+            <label class="form-check-label">ARRL Mem</label>
+            <p class="form-control-plaintext mb-0"><?= strtoupper(esc($m['arrl_mem'] ?? '')) === 'TRUE' ? 'Yes' : 'No' ?></p>
           </div>
           <div class="col-lg">
-            <div class="form-check">
-              <label class="form-check-label" for="carrier"> Carrier Copy </label>
-              <?php if(strtoupper(esc($m['hard_news'])) == 'TRUE') {?>
-                <input class="form-check-input" type="checkbox" name="hard_news" checked />
-              <?php }
-                    else { ?>
-                <input class="form-check-input" type="checkbox" name="hard_news" />
-              <?php } ?>
-            </div>
+            <label class="form-check-label">Carrier Copy</label>
+            <p class="form-control-plaintext mb-0"><?= strtoupper(esc($m['hard_news'] ?? '')) === 'TRUE' ? 'Yes' : 'No' ?></p>
           </div>
           <div class="col-lg">
-            <div class="form-check">
-              <label class="form-check-label" for="dir"> Dir Copy </label>
-              <?php if(strtoupper(esc($m['hard_dir'])) == 'TRUE') {?>
-                <input class="form-check-input" type="checkbox" name="dir" checked />
-              <?php }
-                    else { ?>
-                <input class="form-check-input" type="checkbox" name="dir" />
-              <?php } ?>
-            </div>
+            <label class="form-check-label">Dir Copy</label>
+            <p class="form-control-plaintext mb-0"><?= strtoupper(esc($m['hard_dir'] ?? '')) === 'TRUE' ? 'Yes' : 'No' ?></p>
           </div>
           <div class="col-lg">
-            <div class="form-check">
-              <label class="form-check-label" for="mem_card"> Mem Card </label>
-              <?php if(strtoupper(esc($m['mem_card'])) == 'TRUE') {?>
-                <input class="form-check-input" type="checkbox" name="mem_card" checked />
-              <?php }
-                    else { ?>
-                <input class="form-check-input" type="checkbox" name="mem_card" />
-              <?php } ?>
-            </div>
+            <label class="form-check-label">Mem Card</label>
+            <p class="form-control-plaintext mb-0"><?= strtoupper(esc($m['mem_card'] ?? '')) === 'TRUE' ? 'Yes' : 'No' ?></p>
           </div>
           <div class="col-lg">
-            <div class="form-check">
-              <label class="form-check-label" for="dir_ok"> List OK</label>
-              <?php if(strtoupper(esc($m['ok_mem_dir'])) == 'TRUE') {?>
-                <input class="form-check-input" type="checkbox" name="dir_ok" checked>
-              <?php }
-                    else { ?>
-                <input class="form-check-input" type="checkbox" name="dir_ok">
-              <?php } ?>
-            </div>
+            <label class="form-check-label">List OK</label>
+            <p class="form-control-plaintext mb-0"><?= strtoupper(esc($m['ok_mem_dir'] ?? '')) === 'TRUE' ? 'Yes' : 'No' ?></p>
           </div>
         </div>
         <div class="row">
-          <div class="col-lg py-2">
-            <label for="mem_since">Member Since</label>
-            <input type="text" class="form-control" id="mem_since" name="mem_since" value="<?= esc($m['mem_since']) ?>">
+          <div class="col-md-4 py-2">
+            <label>Member Since</label>
+            <p class="form-control-plaintext mb-0"><?= esc($m['mem_since'] ?? '') ?></p>
           </div>
-          <div class="col-lg py-2">
-            <label for="cur_year">Current Year</label>
-            <input type="text" class="form-control" id="cur_year" name="cur_year" value="<?= esc($m['cur_year']) ?>">
+          <div class="col-md-4 py-2">
+            <label>Payment Date</label>
+            <p class="form-control-plaintext mb-0"><?= esc(staff_format_date($m['paym_date'] ?? null)); ?></p>
           </div>
-          <div class="col-lg py-2">
-            <label for="pay_date">Payment Date</label>
-            <input type="date" class="form-control" id="pay_date" name="pay_date" value="<?php echo date('Y-m-d', $m['paym_date']); ?>">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-lg-6 py-2">
-            <label for="address">Street</label>
-            <input type="text" class="form-control" name="address" value="<?= esc($m['address']) ?>">
+          <div class="col-md-4 py-2">
+            <label>Street</label>
+            <p class="form-control-plaintext mb-0"><?= esc($m['address'] ?? '') ?></p>
           </div>
         </div>
         <div class="row">
-          <div class="col-lg py-2">
-            <label for="city">City</label>
-            <input type="text" class="form-control" id="city" name="city" value="<?= esc($m['city']) ?>">
+          <div class="col-md-4 py-2">
+            <label>City</label>
+            <p class="form-control-plaintext mb-0"><?= esc($m['city'] ?? '') ?></p>
           </div>
-          <div class="col-lg py-2">
-            <label for="callsign">State</label>
-            <select class="form-select" name="state" aria-label="Default select example">
-              <?php
-                foreach($states as $state) {
-                if(esc($m['state']) != 'N/A') {
-                  if($state == esc($m['state'])) {?>
-                  <option selected value="<?php echo $state; ?>"><?php echo $state; ?></option>
-                <?php }
-                  else { ?>
-                  <option value="<?php echo $state; ?>"><?php echo $state; ?></option>
-                <?php
-                    }
-                next($states);
-                  }
-                }?>
-            </select>
+          <div class="col-md-4 py-2">
+            <label>State</label>
+            <p class="form-control-plaintext mb-0"><?= esc($m['state'] ?? '') ?></p>
           </div>
-          <div class="col-lg py-2">
-            <label for="zip">Zip</label>
-            <input type="text" class="form-control" id="zip" name="zip" value="<?= esc($m['zip']) ?>">
+          <div class="col-md-4 py-2">
+            <label>Zip</label>
+            <p class="form-control-plaintext mb-0"><?= esc($m['zip'] ?? '') ?></p>
           </div>
         </div>
         <div class="row mb-1">
           <div class="col py-2">
               <label for="comment">Comments</label>
-              <textarea
-              class="form-control" id="comment" name="comment" rows="7">
-              <?php echo trim(esc($m['comment'])); ?></textarea>
+              <p class="form-control-plaintext mb-0"><?= trim(esc($m['comment'] ?? '')) ?></p>
           </div>
         </div>
         <div class="row mb-3">
@@ -183,16 +128,15 @@
             <?php if($m['silent_date'] == 0) { ?>
               <button type="button" class="btn btn-light btn-sm"><?php echo anchor('set-silent-key/' . $m['id_members'], 'Set Silent Key', 'class="text-decoration-none text-dark"')?></button>
           <?php } else {?>
-            <p style="color: red">Silent Key on: <?php echo date('m/d/Y', $m['silent_date']); }?>
+            <p style="color: red">Silent Key on: <?= esc(staff_format_date($m['silent_date'] ?? null)); ?></p>
+          <?php } ?>
           </div>
         </div>
       </section>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Save changes</button>
       </div>
-      </form>
     </div>
   </div>
 </div>

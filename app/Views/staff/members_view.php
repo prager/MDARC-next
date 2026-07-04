@@ -1,4 +1,21 @@
+<?php
+if (! function_exists('staff_format_date')) {
+  function staff_format_date($value, string $format = 'm/d/Y'): string
+  {
+    if ($value === null || $value === '' || $value === 0 || $value === '0') {
+      return '';
+    }
 
+    if (is_int($value) || ctype_digit((string) $value)) {
+      return date($format, (int) $value);
+    }
+
+    $timestamp = strtotime((string) $value);
+
+    return $timestamp === false ? '' : date($format, $timestamp);
+  }
+}
+?>
 <div class="container mt-5 pt-4">
   <div class="row">
     <div class="col">
@@ -128,7 +145,7 @@
                                   <?= esc($m['description'] ?? '') ?>
                                   <?php } ?>
                             </td>
-                            <td><?php echo date('m/d/Y', $m['paym_date']); ?></td>
+                            <td><?= esc(staff_format_date($m['paym_date'] ?? null)); ?></td>
                             <td class="text-center">
                               <?php if($m['id_users'] != 1) { ?>
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#delMem<?= esc($m['id_members']) ?>"><i class="bi bi-trash"></i></a>
@@ -261,9 +278,9 @@
                         </td>
                         <?php include 'modal_edit_silent.php'; ?>
                         <td><?= esc($s['callsign'] ?? '') ?></td>
-                        <td><?php echo date('m/d/Y', $s['paym_date']); ?></td>
+                        <td><?= esc(staff_format_date($s['paym_date'] ?? null)); ?></td>
                         <td><?php echo $s['cur_year']; ?></td>
-                        <td><?php echo date('m/d/Y', $s['silent_date']); ?></td>
+                        <td><?= esc(staff_format_date($s['silent_date'] ?? null)); ?></td>
                       </tr>
                     <?php endforeach; ?>
                   <?php else: ?>

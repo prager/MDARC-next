@@ -1,0 +1,80 @@
+DEBUG - 2026-07-03 17:39:32 --> Session: Initialization under CLI aborted.
+ERROR - 2026-07-03 17:39:32 --> Error connecting to the database: ErrorException: mysqli::real_connect(): php_network_getaddresses: getaddrinfo for db5004986585.hosting-data.io failed: Name or service not known in /home/honza/github/MDARC-Next/system/Database/MySQLi/Connection.php:202
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /home/honza/github/MDARC-Next/system/Database/MySQLi/Connection.php(202): mysqli->real_connect()
+#2 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect()
+#3 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
+#4 /home/honza/github/MDARC-Next/system/Database/BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query()
+#5 /home/honza/github/MDARC-Next/app/Models/Staff_model.php(72): CodeIgniter\Database\BaseBuilder->get()
+#6 /home/honza/github/MDARC-Next/app/Models/Staff_model.php(348): App\Models\Staff_model->get_mem_types()
+#7 Command line code(1): App\Models\Staff_model->get_dir_data()
+#8 {main}
+
+Next mysqli_sql_exception: php_network_getaddresses: getaddrinfo for db5004986585.hosting-data.io failed: Name or service not known in /home/honza/github/MDARC-Next/system/Database/MySQLi/Connection.php:202
+Stack trace:
+#0 /home/honza/github/MDARC-Next/system/Database/MySQLi/Connection.php(202): mysqli->real_connect()
+#1 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect()
+#2 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
+#3 /home/honza/github/MDARC-Next/system/Database/BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query()
+#4 /home/honza/github/MDARC-Next/app/Models/Staff_model.php(72): CodeIgniter\Database\BaseBuilder->get()
+#5 /home/honza/github/MDARC-Next/app/Models/Staff_model.php(348): App\Models\Staff_model->get_mem_types()
+#6 Command line code(1): App\Models\Staff_model->get_dir_data()
+#7 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: php_network_getaddresses: getaddrinfo for db5004986585.hosting-data.io failed: Name or service not known in /home/honza/github/MDARC-Next/system/Database/MySQLi/Connection.php:246
+Stack trace:
+#0 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect()
+#1 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
+#2 /home/honza/github/MDARC-Next/system/Database/BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query()
+#3 /home/honza/github/MDARC-Next/app/Models/Staff_model.php(72): CodeIgniter\Database\BaseBuilder->get()
+#4 /home/honza/github/MDARC-Next/app/Models/Staff_model.php(348): App\Models\Staff_model->get_mem_types()
+#5 Command line code(1): App\Models\Staff_model->get_dir_data()
+#6 {main}
+DEBUG - 2026-07-03 17:39:54 --> Session: Initialization under CLI aborted.
+ERROR - 2026-07-03 17:39:54 --> Error connecting to the database: ErrorException: mysqli::real_connect(): php_network_getaddresses: getaddrinfo for db5004986585.hosting-data.io failed: Name or service not known in /home/honza/github/MDARC-Next/system/Database/MySQLi/Connection.php:202
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /home/honza/github/MDARC-Next/system/Database/MySQLi/Connection.php(202): mysqli->real_connect()
+#2 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect()
+#3 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
+#4 /home/honza/github/MDARC-Next/system/Database/BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query()
+#5 /home/honza/github/MDARC-Next/app/Models/Staff_model.php(72): CodeIgniter\Database\BaseBuilder->get()
+#6 /home/honza/github/MDARC-Next/app/Models/Staff_model.php(348): App\Models\Staff_model->get_mem_types()
+#7 Command line code(1): App\Models\Staff_model->get_dir_data()
+#8 {main}
+
+Next mysqli_sql_exception: php_network_getaddresses: getaddrinfo for db5004986585.hosting-data.io failed: Name or service not known in /home/honza/github/MDARC-Next/system/Database/MySQLi/Connection.php:202
+Stack trace:
+#0 /home/honza/github/MDARC-Next/system/Database/MySQLi/Connection.php(202): mysqli->real_connect()
+#1 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect()
+#2 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
+#3 /home/honza/github/MDARC-Next/system/Database/BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query()
+#4 /home/honza/github/MDARC-Next/app/Models/Staff_model.php(72): CodeIgniter\Database\BaseBuilder->get()
+#5 /home/honza/github/MDARC-Next/app/Models/Staff_model.php(348): App\Models\Staff_model->get_mem_types()
+#6 Command line code(1): App\Models\Staff_model->get_dir_data()
+#7 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: php_network_getaddresses: getaddrinfo for db5004986585.hosting-data.io failed: Name or service not known in /home/honza/github/MDARC-Next/system/Database/MySQLi/Connection.php:246
+Stack trace:
+#0 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect()
+#1 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
+#2 /home/honza/github/MDARC-Next/system/Database/BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query()
+#3 /home/honza/github/MDARC-Next/app/Models/Staff_model.php(72): CodeIgniter\Database\BaseBuilder->get()
+#4 /home/honza/github/MDARC-Next/app/Models/Staff_model.php(348): App\Models\Staff_model->get_mem_types()
+#5 Command line code(1): App\Models\Staff_model->get_dir_data()
+#6 {main}
+CRITICAL - 2026-07-03 17:39:54 --> ErrorException: Uncaught CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: php_network_getaddresses: getaddrinfo for db5004986585.hosting-data.io failed: Name or service not known in /home/honza/github/MDARC-Next/system/Database/BaseConnection.php:465
+Stack trace:
+#0 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
+#1 /home/honza/github/MDARC-Next/system/Database/BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query()
+#2 /home/honza/github/MDARC-Next/app/Models/Staff_model.php(72): CodeIgniter\Database\BaseBuilder->get()
+#3 /home/honza/github/MDARC-Next/app/Models/Staff_model.php(348): App\Models\Staff_model->get_mem_types()
+#4 Command line code(1): App\Models\Staff_model->get_dir_data()
+#5 {main}
+  thrown
+[Method: CLI, Route: /]
+in SYSTEMPATH/Database/BaseConnection.php on line 465.
+ 1 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
+DEBUG - 2026-07-03 17:40:52 --> Session: Initialization under CLI aborted.

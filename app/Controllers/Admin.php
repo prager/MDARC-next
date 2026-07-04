@@ -322,6 +322,7 @@ class Admin extends BaseController
 			$data['lic'] = $this->data_mod->get_lic();
 
 			$db    = \Config\Database::connect();
+			
 			// Call stored procedure directly
 			$query = $db->query('CALL Get_Mem_Types()');
 			$types = $query->getResultArray();
@@ -378,13 +379,13 @@ class Admin extends BaseController
 
 			$param['id'] = $id;
 
-			if ($this->staff_mod->edit_mem($param)) {
+			if ($this->admin_mod->edit_mem($param)) {
 				$this->show_members();
 			}
 			else {
 				$data['title'] = 'Douplicate Entry Error!';
 				$data['msg'] = 'This is duplicate entry. The member ' . $param['lname'] . ' with callsign ' . $param['callsign'] . ' is already in the database.<br><br>';
-				$data['msg'] .= 'Go back to ' . anchor('members', 'members listing');
+				$data['msg'] .= 'Go back to ' . anchor('admin-members', 'members listing');
 				echo view('status/status_view', $data);
 			}
 			echo view('template/footer_master');
@@ -413,6 +414,10 @@ class Admin extends BaseController
 
 	public function show_members() {
 		if($this->check_admin()) {
+			if ($this->request->getGet('action') === 'add') {
+				$this->add_mem();
+				return;
+			}
 			echo view('template/header_admin');
 			$db    = \Config\Database::connect();
 			$pager = Services::pager();

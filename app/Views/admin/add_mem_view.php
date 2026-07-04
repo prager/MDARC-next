@@ -1,6 +1,6 @@
 <section id="learn" class="p-5">
   <div class="container">
-    <form action="<?php echo base_url() . 'index.php/edit-mem'; ?>" method="post">
+    <form action="<?php echo base_url() . 'index.php/admin-edit-mem'; ?>" method="post">
       <div class="row mt-5 mb-3">
         <div class="col-lg offset-lg-1">
           <h5>Add MDARC Member</h5>

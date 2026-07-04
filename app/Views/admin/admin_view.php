@@ -8,10 +8,10 @@
               <h3 class="mb-3">Welcome Admin!</h3>
               <p>Staff page: <a href="<?php echo base_url() . 'index.php/staff'; ?>" class="text-decoration-none">Staff Page</a></p>
               <p>Member page: <a href="<?php echo base_url() . 'index.php/member'; ?>" class="text-decoration-none">Member Page</a></p>
-              <p>Add / Edit Members: <a href="<?php echo base_url() . 'index.php/admin-members'; ?>" class="text-decoration-none">MDARC Members</a></p>
-              <p>Add MDARC Member: <a href="<?php echo base_url() . 'index.php/admin-add-mem'; ?>" class="text-decoration-none">Add a Member</a></p>
-              <p>FAQs: <a href="<?php echo base_url() . 'index.php/admin-faqs'; ?>" class="text-decoration-none">FAQs Editing</a></p>
-              <p>Add / Edit Portal Users: <a href="<?php echo base_url() . 'index.php/admin-edit-users'; ?>" class="text-decoration-none">Portal Users</a></p>
+              <p>Edit Members: <a href="<?php echo site_url('admin-members'); ?>" class="text-decoration-none">MDARC Members</a></p>
+              <p>Add MDARC Member: <a href="<?php echo site_url('admin-members') . '?action=add'; ?>" class="text-decoration-none">Add a Member</a></p>
+              <p>FAQs: <a href="<?php echo site_url('admin-faqs'); ?>" class="text-decoration-none">FAQs Editing</a></p>
+              <p>Add / Edit Portal Users: <a href="<?php echo site_url('admin-edit-users'); ?>" class="text-decoration-none">Portal Users</a></p>
             </div>
         </div>
     </div>

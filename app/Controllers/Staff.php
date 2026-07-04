@@ -306,6 +306,36 @@ class Staff extends BaseController
 		}
 	}
 
+	public function print_dir() {
+		if($this->check_staff()) {
+			echo view('template/header_staff');
+			echo view('staff/print_dir_view', $this->staff_mod->get_dir_data(date('Y', time())));
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+		}
+		echo view('template/footer');
+	}
+
+	public function print_callsigns() {
+		if($this->check_staff()) {
+			echo view('template/header_staff');
+			$param['states'] = $this->data_mod->get_states_array();
+			$param['lic'] = $this->data_mod->get_lic();
+			echo view('staff/print_callsigns_view', $this->staff_mod->get_dir_data(date('Y', time())));
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Authorization Error';
+			$data['msg'] = 'You may not be authorized to view this page. Go back and try again ' . anchor(base_url(), 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+		}
+		echo view('template/footer');
+	}
+
   /**
     * Checks for master user according to the type code
     */
