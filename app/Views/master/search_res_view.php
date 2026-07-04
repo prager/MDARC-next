@@ -63,7 +63,8 @@
                     <?php include 'mod_man_payment.php'; ?>
                   </td>
                   <td class="text-center">
-                      <a href="#" data-bs-toggle="modal" data-bs-target="#delMem<?= esc($m['id_members']) ?>"><i class="bi bi-trash"></i></a>
+                  <a href="#" data-bs-toggle="modal" data-bs-target="#delMem<?= esc($m['id_members']) ?>"><i class="bi bi-trash"></i></a>
+                    <?php include 'mod_del_mem.php'; ?>
                   </td>
                 </tr>
               <?php endforeach; ?>

@@ -1,60 +1,391 @@
-# CodeIgniter 4 Framework
+# MDARC Next
 
-## What is CodeIgniter?
+MDARC Next is a CodeIgniter 4 application for managing the MDARC membership portal. It supports member self-service, staff/member administration, directory printing, payment recording, FAQs, and portal-user administration.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+## Technology
 
-This repository holds the distributable version of the framework.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+- PHP 8.1+
+- CodeIgniter 4.6.x
+- MySQL/MariaDB through the MySQLi driver
+- Bootstrap-based server-rendered views
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+The framework front controller is `public/index.php`. Web servers should point the document root at `public/`.
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+## Main Areas
 
-## Important Change with index.php
+- Public pages: home, terms, FAQs, login
+- Member portal: member profile, family members, personal data updates, member directory
+- Staff portal: member listing, print directory, print callsigns
+- Admin portal: member management, add/edit members, portal users, FAQs
+- Master portal: full administrative member/user/payment workflows
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+Important controllers:
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+- `app/Controllers/Home.php`
+- `app/Controllers/Login.php`
+- `app/Controllers/Member.php`
+- `app/Controllers/Staff.php`
+- `app/Controllers/Admin.php`
+- `app/Controllers/Master.php`
 
-**Please** read the user guide for a better explanation of how CI4 works!
+Important models:
 
-## Repository Management
+- `app/Models/Staff_model.php`
+- `app/Models/Master_model.php`
+- `app/Models/Admin_model.php`
+- `app/Models/Member_model.php`
+- `app/Models/Data_model.php`
+- `app/Models/DirectoryModel.php`
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+## Common Routes
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+- `/index.php/login`
+- `/index.php/member`
+- `/index.php/staff`
+- `/index.php/staff-members`
+- `/index.php/print-dir`
+- `/index.php/print-callsigns`
+- `/index.php/admin`
+- `/index.php/admin-members`
+- `/index.php/admin-add-mem`
+- `/index.php/master`
+- `/index.php/members`
+- `/index.php/add-mem`
 
-## Contributing
+Route definitions live in `app/Config/Routes.php`.
 
-We welcome contributions from the community.
+## Local Setup
 
-Please read the [*Contributing to CodeIgniter*](https://github.com/codeigniter4/CodeIgniter4/blob/develop/CONTRIBUTING.md) section in the development repository.
+1. Install PHP 8.1+ with required extensions:
+   - `intl`
+   - `mbstring`
+   - `mysqli`
 
-## Server Requirements
+2. Install dependencies if `vendor/` is not present:
 
-PHP version 8.1 or higher is required, with the following extensions installed:
+   ```bash
+   composer install
+   ```
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+3. Configure `.env`.
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
+   Required settings include:
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+   ```ini
+   CI_ENVIRONMENT = development
+   app.baseURL = 'https://mdarc-next.jlkconsulting.info'
+   database.default.hostname = ...
+   database.default.database = ...
+   database.default.username = ...
+   database.default.password = ...
+   database.default.DBDriver = MySQLi
+   ```
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+   In the current local `.env`, the uncommented database settings are the development database used by this GitHub checkout. The commented IONOS database settings are the production database. Keep that separation when copying configuration between environments.
+
+4. Verify routes:
+
+   ```bash
+   php spark routes
+   ```
+
+5. Run the built-in development server when needed:
+
+   ```bash
+   php spark serve
+   ```
+
+## Database Notes
+
+The application expects the membership database schema and stored procedures to exist. Common tables/procedures referenced by the app include:
+
+- `tMembers`
+- `tMemTypes`
+- `users`
+- `admin_types`
+- `faqs`
+- `payactions`
+- `mem_payments`
+- `old_mems_2020`
+- `CountMembers`
+- `GetMembersPaged`
+- `GetMembers99`
+- `GetHardNewsMembers`
+- `GetSilentKeys`
+- `Get_Mem_Types`
+- `GetCurEmails`
+- `GetDueEmails`
+- `GetDirectory`
+
+Several controller actions call stored procedures directly and then flush remaining result sets to avoid MySQL "commands out of sync" errors.
+
+The current full database dump referenced for this project is:
+
+```text
+/home/honza/Documents/ham-radio/memberships/web-portal/sql/members_db-2026-07-04b.sql
+```
+
+The schema-only dump, without table data, is:
+
+```text
+/home/honza/Documents/ham-radio/memberships/web-portal/sql/members_db-2026-07-04_nodata.sql
+```
+
+Both dumps were generated by phpMyAdmin on July 4, 2026. They declare:
+
+- Host in dump comments: `db5005775576.hosting-data.io`
+- Database name: `dbs4858794`
+- Server: MariaDB 10.11.x
+- Character set: mostly `utf8mb3`
+
+Use `members_db-2026-07-04b.sql` when restoring the full database including production data. Use `members_db-2026-07-04_nodata.sql` when creating an empty database with the same table structure. Stored procedures are maintained separately in:
+
+```text
+sql/stored-procs.sql
+```
+
+After importing the table/data dump, import `sql/stored-procs.sql` and verify that the procedures listed above exist on the target database before using the member listing, directory, and reporting pages.
+
+Treat database dumps as sensitive data. The dump contains member records, user records, password hashes, email addresses, phone numbers, and historical session/IP data. Do not commit dumps to Git or leave them in a public web directory.
+
+## Useful Commands
+
+```bash
+php -l app/Controllers/Admin.php
+php -l app/Controllers/Master.php
+php -l app/Models/Staff_model.php
+php spark routes
+php spark cache:clear
+```
+
+If Composer dependencies are installed, run tests with:
+
+```bash
+composer test
+```
+
+## Deployment Notes
+
+### Server Requirements
+
+- PHP 8.1 or newer
+- PHP extensions: `intl`, `mbstring`, `mysqli`
+- Composer on the build/deploy machine
+- MySQL or MariaDB access
+- Web server pointed at the repository `public/` directory
+
+### First-Time Remote Deployment
+
+1. Upload or clone the repository on the server.
+
+   Example with Git:
+
+   ```bash
+   git clone <repo-url> MDARC-Next
+   cd MDARC-Next
+   ```
+
+   Example with `rsync` from a local checkout:
+
+   ```bash
+   rsync -av --delete \
+     --exclude .git \
+     --exclude .env \
+     --exclude writable/cache \
+     --exclude writable/logs \
+     ./ user@example.com:/path/to/MDARC-Next/
+   ```
+
+2. Install PHP dependencies on the server or in the deployment artifact:
+
+   ```bash
+   composer install --no-dev --optimize-autoloader
+   ```
+
+3. Point the web server document root to:
+
+   ```text
+   /path/to/MDARC-Next/public
+   ```
+
+   If the host cannot point directly to `public/`, keep `index.php` requests routed to `public/index.php` and do not expose `app/`, `system/`, `.env`, or `writable/` publicly.
+
+4. Create server-local writable directories and permissions:
+
+   ```bash
+   mkdir -p writable/cache writable/logs writable/session writable/uploads
+   chmod -R ug+rwX writable
+   ```
+
+   The web server user must be able to write to `writable/`.
+
+5. Create the server `.env` file.
+
+   Start from `env` or an existing deployment `.env`, then set the environment-specific values. The repository is used as the development version; the active database block in `.env` should point to development. Production deployments should use the IONOS production database values, kept outside Git:
+
+   ```ini
+   CI_ENVIRONMENT = production
+
+   app.baseURL = 'https://mdarc-next.jlkconsulting.info'
+
+   database.default.hostname = 'your-db-host'
+   database.default.database = 'your-db-name'
+   database.default.username = 'your-db-user'
+   database.default.password = 'your-db-password'
+   database.default.DBDriver = MySQLi
+   database.default.DBPrefix =
+   database.default.port = 3306
+   ```
+
+   Do not commit `.env` or database credentials to Git.
+
+   A typical `.env` can keep the production values commented for reference and the development values active locally:
+
+   ```ini
+   # Production IONOS database, keep commented in local development
+   # database.default.hostname = 'prod-db-host'
+   # database.default.database = 'prod-db-name'
+   # database.default.username = 'prod-db-user'
+   # database.default.password = 'prod-db-password'
+   # database.default.DBDriver = MySQLi
+
+   # Development database used by this checkout
+   database.default.hostname = 'dev-db-host'
+   database.default.database = 'dev-db-name'
+   database.default.username = 'dev-db-user'
+   database.default.password = 'dev-db-password'
+   database.default.DBDriver = MySQLi
+   database.default.DBPrefix =
+   ```
+
+### Database Deployment
+
+1. Create the target database and user.
+
+   If the hosting control panel creates the database for you, use that database name in `.env`. If you have SQL privileges to create it manually:
+
+   ```sql
+   CREATE DATABASE dbs4858794 DEFAULT CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci;
+   CREATE USER 'mdarc_user'@'%' IDENTIFIED BY 'replace-with-a-strong-password';
+   GRANT ALL PRIVILEGES ON dbs4858794.* TO 'mdarc_user'@'%';
+   FLUSH PRIVILEGES;
+   ```
+
+2. Import the database dump.
+
+   For a full restore including member/user data, import the data dump:
+
+   ```bash
+   mysql -h your-db-host -u your-db-user -p < /path/to/members_db-2026-07-04b.sql
+   ```
+
+   For an empty database with table structure only, import the no-data dump:
+
+   ```bash
+   mysql -h your-db-host -u your-db-user -p your-db-name < /path/to/members_db-2026-07-04_nodata.sql
+   ```
+
+   If the hosting provider does not allow `CREATE DATABASE`, create the database in the control panel first, then either:
+
+   - remove or edit the `CREATE DATABASE` and `USE dbs4858794;` lines in the dump, or
+   - import through phpMyAdmin into the selected database.
+
+3. Verify the core tables:
+
+   ```sql
+   SHOW TABLES;
+   SELECT COUNT(*) FROM tMembers;
+   SELECT COUNT(*) FROM users;
+   ```
+
+4. Verify stored procedures required by the app:
+
+   ```sql
+   SHOW PROCEDURE STATUS WHERE Db = DATABASE();
+   ```
+
+   Confirm at least these procedures exist:
+
+   ```text
+   CountMembers
+   GetMembersPaged
+   GetMembers99
+   GetHardNewsMembers
+   GetSilentKeys
+   Get_Mem_Types
+   GetCurEmails
+   GetDueEmails
+   GetDirectory
+   ```
+
+   If they are missing, import the routines script:
+
+   ```bash
+   mysql -h your-db-host -u your-db-user -p your-db-name < sql/stored-procs.sql
+   ```
+
+   You can also import `sql/stored-procs.sql` through phpMyAdmin using the selected database's Import tab.
+
+### Post-Deploy Checks
+
+Run these from the deployed app directory:
+
+```bash
+php spark routes
+php spark cache:clear
+php -l app/Config/Routes.php
+php -l app/Controllers/Admin.php
+php -l app/Controllers/Master.php
+php -l app/Controllers/Staff.php
+```
+
+Then check these URLs while logged in with the appropriate role:
+
+```text
+/index.php/admin
+/index.php/admin-members
+/index.php/admin-add-mem
+/index.php/master
+/index.php/members
+/index.php/staff
+/index.php/staff-members
+/index.php/print-dir
+```
+
+### Updating an Existing Remote Deployment
+
+1. Back up the current database:
+
+   ```bash
+   mysqldump -h your-db-host -u your-db-user -p your-db-name > members_backup_$(date +%F).sql
+   ```
+
+2. Deploy code changes with Git or `rsync`.
+
+3. Install/update dependencies if `composer.json` changed:
+
+   ```bash
+   composer install --no-dev --optimize-autoloader
+   ```
+
+4. Clear application cache:
+
+  ```bash
+  php spark cache:clear
+  ```
+
+5. If route or controller changes do not appear immediately in production, restart PHP-FPM or clear PHP opcache.
+
+6. Re-check routes:
+
+   ```bash
+   php spark routes
+   ```
+
+## Coding Notes
+
+- Controllers render views directly with `echo view(...)`.
+- Role access checks live in each controller, for example `check_master()`, `check_admin()`, and `check_staff()`.
+- Admin and master member-edit flows are intentionally separate route/controller paths.
+- Print directory data is assembled by `Staff_model::get_dir_data()`.
+- Member listing pages use stored procedures and manual pagination variables passed to the view.
