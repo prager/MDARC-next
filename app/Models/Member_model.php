@@ -634,4 +634,39 @@ private function check_second_dup($param) {
 
     return $retarr;
   }
+  public function get_member_by_email($email) {
+    $db      = \Config\Database::connect();
+    $builder = $db->table('tMembers');
+    $builder->where('email', $email);
+    $retval = array();
+    $retval['flag'] = FALSE;
+    $retval['empty'] = FALSE;
+    $cnt = $builder->countAllResults();
+    if(($cnt > 0) && (strlen($email) > 0)) {
+      $retval['flag'] = TRUE;
+      $builder->resetQuery();
+      $builder->where('email', $email);
+      $mem_obj = $builder->get()->getRow();
+      $retval['fname'] = $mem_obj->fname;
+      $retval['lname'] = $mem_obj->lname;
+      $retval['callsign'] = $mem_obj->callsign;
+      $retval['phone'] = $mem_obj->w_phone;
+      $retval['email'] = $email;
+      $retval['city'] = $mem_obj->city;
+      $retval['state'] = $mem_obj->state;
+      $retval['zip'] = $mem_obj->zip;
+      $retval['address'] = $mem_obj->address;
+      $retval['id_members'] = $mem_obj->id_members;
+      $retval['mem_since'] = $mem_obj->mem_since;
+      $retval['mem_type'] = $mem_obj->mem_type;
+      $retval['id_mem_types'] = $mem_obj->id_mem_types;
+      $retval['license'] = $mem_obj->license;
+      $retval['cur_year'] = $mem_obj->cur_year;
+    }
+    elseif(strlen($email) == 0) {
+      $retval['empty'] = TRUE;
+    }
+    $db->close();
+    return $retval;
+  }
 }

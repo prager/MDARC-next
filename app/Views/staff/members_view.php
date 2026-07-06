@@ -79,7 +79,7 @@ if (! function_exists('staff_format_date')) {
                                 'mem_since'      => 'Member Since',
                                 'parent_primary'      => 'Mem Type',
                                 'paym_date' => 'Pay Date',
-                                'pl1' => 'Deactivate'
+                                // 'pl1' => 'Deactivate'
                             ];
                           ?>
 
@@ -146,14 +146,14 @@ if (! function_exists('staff_format_date')) {
                                   <?php } ?>
                             </td>
                             <td><?= esc(staff_format_date($m['paym_date'] ?? null)); ?></td>
-                            <td class="text-center">
+                            <!-- <td class="text-center">
                               <?php if($m['id_users'] != 1) { ?>
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#delMem<?= esc($m['id_members']) ?>"><i class="bi bi-trash"></i></a>
                                 <?php include 'mod_del_mem.php'; ?>
                                 <?php } else { ?>
                                 <i class="bi bi-trash"></i>
                                 <?php } ?>
-                            </td>
+                            </td> -->
                           </tr>
                         <?php endforeach; ?>
                         </tbody>
@@ -182,7 +182,7 @@ if (! function_exists('staff_format_date')) {
                       <th>Callsign</th>
                       <th>License</th>
                       <th>Email</th>
-                      <th>Purge</th>
+                      <!-- <th>Purge</th> -->
                     </tr>
                   </thead>
                   <tbody>
@@ -198,9 +198,9 @@ if (! function_exists('staff_format_date')) {
                         <td><?= esc($m['callsign'] ?? '') ?></td>
                         <td><?= esc($m['license'] ?? '') ?></td>
                         <td><?= esc($m['email'] ?? '') ?></td>
-                        <td class="text-center">
+                        <!-- <td class="text-center">
                             <a href="#" data-bs-toggle="modal" data-bs-target="#purgeMem<?= esc($m['id_members']) ?>"><i class="bi bi-trash"></i></a>
-                        </td>
+                        </td> -->
                         <?php include 'mod_purge_mem.php'; ?>
                       </tr>
                     <?php endforeach; ?>

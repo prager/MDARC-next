@@ -220,4 +220,10 @@ class Master_model extends Model {
         $db->close();
         return $retarr;
     }
+  public function delete_user($id) {
+    $db      = \Config\Database::connect();
+    $builder = $db->table('users');
+    $builder->delete(['id_user' => $id]);
+    $db->close();
+  }
 }

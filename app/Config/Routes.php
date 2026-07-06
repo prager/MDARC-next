@@ -4,18 +4,22 @@ use CodeIgniter\Router\RouteCollection;
 
 /**
  * @var RouteCollection $routes
+ * Update 2
  */
 //$routes->get('/', 'Home::index');
 $routes->get('/', 'Home::default');
 $routes->get('public', 'Home::mainpg');
 
 $routes->post('login', 'Login::index');
+$routes->post('register', 'Home::register');
+$routes->post('send-reg', 'Home::send_reg');
 $routes->post('master-edit-faq/(:num)', 'Master::edit_faq/$1');
 $routes->post('master-edit-faq', 'Master::edit_faq');
 $routes->post('load-admin/(:num)', 'Master::load_admin/$1');
 $routes->post('reset-user/(:num)', 'Master::reset_user/$1');
 $routes->post('master-search', 'Master::search');
 $routes->post('admin-search', 'Admin::search');
+$routes->post('staff-search', 'Staff::search');
 $routes->post('admin-edit-mem/(:num)', 'Admin::edit_mem/$1');
 $routes->post('admin-edit-mem', 'Admin::edit_mem');
 $routes->post('master/add-fam/(:num)', 'Master::add_fam_mem/$1');
@@ -29,6 +33,8 @@ $routes->post('member-search', 'Member::search');
 $routes->post('edit-fam-mem/(:num)', 'Member::edit_fam_mem/$1');
 $routes->post('add-fam-mem/(:num)', 'Member::add_fam_mem/$1');
 $routes->post('do-update', 'Member::do_update');
+
+$routes->get('delete-user/(:num)', 'Master::delete_user/$1');
 
 $routes->get('delete-faq/(:num)', 'Master::delete_faq/$1');
 $routes->get('edit-users', 'Master::edit_users');

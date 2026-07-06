@@ -11,7 +11,7 @@ class Staff extends BaseController
     public function index(): void
     {
         if($this->check_staff()) {
-            echo view('template/header_admin.php');
+            echo view('template/header_staff.php');
             echo view('staff/staff_view.php');
 			echo view('template/footer_staff');
         }
@@ -55,6 +55,67 @@ class Staff extends BaseController
             }
         }
     }
+/* added search via codex */
+	public function search() {
+		if($this->check_staff()) {
+			echo view('template/header_staff.php');
+
+			$q  = trim((string) ($this->request->getPost('search') ?? ''));
+			$db = \Config\Database::connect();
+
+			$query = $db->query('CALL Search_Members(?)', [$q]);
+			$rows  = $query->getResultArray() ?? [];
+			$query->freeResult();
+			$this->flushMultiResults($db);
+
+			$query = $db->query('CALL Get_Mem_Types()');
+			$types = $query->getResultArray();
+			$query->freeResult();
+			$this->flushMultiResults($db);
+
+			$count = count($rows);
+
+			if ($count === 0) {
+				$flash = 'No results found';
+				$flashType = 'warning';
+			} elseif ($count === 100) {
+				$flash = 'The first 100 records is shown. You need to refine your search.';
+				$flashType = 'danger';
+			} else {
+				$flash = $count . ' members found';
+				$flashType = 'success';
+			}
+
+			$data = [
+				'q'         => $q,
+				'rows'      => $rows,
+				'count'     => $count,
+				'flash'     => $flash,
+				'flashType' => $flashType,
+				'lic'       => ['SWL', 'Technician', 'General', 'Advanced', 'Amateur Extra'],
+				'types'     => $types,
+				'states'    => [
+					'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+					'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+					'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+					'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+					'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+				],
+			];
+
+			echo view('staff/search_res_view.php', $data);
+			echo view('template/footer_staff');
+		}
+		else {
+			echo view('template/header');
+			$this->login_mod->logout();
+			$data['title'] = 'Login Error';
+			$data['msg'] = 'There was an error while checking your credentials.<br><br>';
+			echo view('status/status_view.php', $data);
+			echo view('template/footer');
+		}
+	}
+
 /* AI gen -2 */
 	public function show_members() {
 		if($this->check_staff()) {

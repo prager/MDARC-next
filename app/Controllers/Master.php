@@ -1,4 +1,5 @@
 <?php
+/* codex fixes */
 
 namespace App\Controllers;
 use App\Controllers\BaseController;
@@ -1004,5 +1005,34 @@ class Master extends BaseController
 			 echo view('status/status_view', $data);
 			 echo view('template/footer');
 		}
+	}
+	/*Codex fix */
+	public function delete_user($id = null) {
+		if($this->check_master()) {
+			echo view('template/header_master');
+			 $id = $id ?? $this->request->getUri()->getSegment(2);
+			 if($id) {
+				 $this->master_mod->delete_user($id);
+				 $msg = 'Deleted user. Thank you!';
+				 $errmsg = NULL;
+			 }
+			 else {
+				 $msg = NULL;
+				 $errmsg = 'Unable to delete user: missing user ID.';
+			 }
+			 $data = $this->master_mod->get_users_data();
+	 		 $data['states'] = $this->data_mod->get_states_array();
+			 $data['msg'] = $msg;
+			 $data['errmsg'] = $errmsg;
+	 		 echo view('master/edit_users_view', $data);
+		}
+		else {
+			echo view('template/header');
+			 $data['title'] = 'Login Error';
+			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			 echo view('status/status_view', $data);
+		}
+		echo view('template/footer');
 	}
 }
