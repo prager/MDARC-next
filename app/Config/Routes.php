@@ -4,7 +4,7 @@ use CodeIgniter\Router\RouteCollection;
 
 /**
  * @var RouteCollection $routes
- * Update 2
+ * Update 4
  */
 //$routes->get('/', 'Home::index');
 $routes->get('/', 'Home::default');
@@ -13,6 +13,11 @@ $routes->get('public', 'Home::mainpg');
 $routes->post('login', 'Login::index');
 $routes->post('register', 'Home::register');
 $routes->post('send-reg', 'Home::send_reg');
+$routes->get('set-pass/(:segment)', 'Home::set_pass/$1');
+$routes->post('set-pass', 'Home::complete_registration');
+$routes->post('request-password-reset', 'Home::request_password_reset');
+$routes->get('reset-password/(:segment)', 'Home::reset_password/$1');
+$routes->post('reset-password', 'Home::complete_password_reset');
 $routes->post('master-edit-faq/(:num)', 'Master::edit_faq/$1');
 $routes->post('master-edit-faq', 'Master::edit_faq');
 $routes->post('load-admin/(:num)', 'Master::load_admin/$1');

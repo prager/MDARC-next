@@ -1,5 +1,7 @@
 <?php
 
+/* updated 2 */
+
 namespace App\Controllers;
 
 use CodeIgniter\HTTP\RedirectResponse;
@@ -53,15 +55,15 @@ class Home extends BaseController
         if($new_usr['flag']) {
             $data = array();
             helper(['form', 'url']);
-            $data['fname'] = $new_usr['fname'];
-            $data['lname'] = $new_usr['lname'];
+            $data['fname'] = '';
+            $data['lname'] = '';
             $data['email'] = $new_usr['email'];
             $data['callsign'] = $new_usr['callsign'];
-            $data['phone'] = $new_usr['phone'];
-            $data['street']= $new_usr['address'];
-            $data['city'] = $new_usr['city'];
-            $data['state_cd'] = $new_usr['state'];
-            $data['zip_cd'] = $new_usr['zip'];
+            $data['phone'] = '';
+            $data['street']= '';
+            $data['city'] = '';
+            $data['state_cd'] = '';
+            $data['zip_cd'] = '';
             $data['msg'] = '';
             $data['twitter'] = '';
             $data['facebook'] = '';
@@ -169,6 +171,141 @@ class Home extends BaseController
         }
         echo view('template/footer');
     	}
+
+    public function set_pass(string $token): void {
+        $user = $this->user_mod->get_user_by_registration_token($token);
+
+        echo view('template/header_light');
+        if($user === NULL) {
+            echo view('status/status_view', array(
+                'title' => 'Invalid Registration Link',
+                'msg' => 'This registration link is invalid or has already been used.',
+            ));
+        }
+        else {
+            echo view('public/set_password_view', array(
+                'token' => $token,
+                'user' => $user,
+                'username' => '',
+                'msg' => '',
+            ));
+        }
+        echo view('template/footer');
+    }
+
+    public function complete_registration(): void {
+        $param = array(
+            'token' => (string) $this->request->getPost('token'),
+            'username' => (string) $this->request->getPost('username'),
+            'pass' => (string) $this->request->getPost('pass'),
+            'pass2' => (string) $this->request->getPost('pass2'),
+        );
+        $flags = $this->user_mod->complete_registration($param);
+
+        echo view('template/header_light');
+        if($flags['flag']) {
+            echo view('status/status_view', array(
+                'title' => 'Registration Complete',
+                'msg' => 'Your username and password have been saved. You can now sign in.',
+            ));
+        }
+        elseif(!$flags['token']) {
+            echo view('status/status_view', array(
+                'title' => 'Invalid Registration Link',
+                'msg' => 'This registration link is invalid or has already been used.',
+            ));
+        }
+        else {
+            $user = $this->user_mod->get_user_by_registration_token($param['token']);
+            $messages = array();
+            if(!$flags['username']) {
+                $messages[] = 'That username is unavailable. Please choose another username.';
+            }
+            if(!$flags['pass_comp']) {
+                $messages[] = 'The password must contain at least 12 characters, including two uppercase letters, two lowercase letters, two numbers, and two special characters.';
+            }
+            if(!$flags['pass_match']) {
+                $messages[] = 'The passwords do not match.';
+            }
+            echo view('public/set_password_view', array(
+                'token' => $param['token'],
+                'user' => $user,
+                'username' => $param['username'],
+                'msg' => '<div class="alert alert-danger">' . implode('<br>', $messages) . '</div>',
+            ));
+        }
+        echo view('template/footer');
+    }
+
+    public function request_password_reset(): void {
+        $email = strtolower(trim((string) $this->request->getPost('email')));
+        $this->user_mod->request_password_reset($email);
+
+        echo view('template/header_light');
+        echo view('status/status_view', array(
+            'title' => 'Check Your Email',
+            'msg' => 'If that email address belongs to an account, a recovery message has been sent. The link in the message expires in 20 minutes.',
+        ));
+        echo view('template/footer');
+    }
+
+    public function reset_password(string $token): void {
+        $user = $this->user_mod->get_user_by_password_reset_token($token);
+
+        echo view('template/header_light');
+        if($user === NULL) {
+            echo view('status/status_view', array(
+                'title' => 'Invalid or Expired Link',
+                'msg' => 'This password recovery link is invalid, expired, or has already been used. Please request a new link.',
+            ));
+        }
+        else {
+            echo view('public/reset_password_view', array(
+                'token' => $token,
+                'user' => $user,
+                'msg' => '',
+            ));
+        }
+        echo view('template/footer');
+    }
+
+    public function complete_password_reset(): void {
+        $param = array(
+            'token' => (string) $this->request->getPost('token'),
+            'pass' => (string) $this->request->getPost('pass'),
+            'pass2' => (string) $this->request->getPost('pass2'),
+        );
+        $flags = $this->user_mod->complete_password_reset($param);
+
+        echo view('template/header_light');
+        if($flags['flag']) {
+            echo view('status/status_view', array(
+                'title' => 'Password Updated',
+                'msg' => 'Your password has been updated. You can now sign in with your username.',
+            ));
+        }
+        elseif(!$flags['token']) {
+            echo view('status/status_view', array(
+                'title' => 'Invalid or Expired Link',
+                'msg' => 'This password recovery link is invalid, expired, or has already been used. Please request a new link.',
+            ));
+        }
+        else {
+            $messages = array();
+            if(!$flags['pass_comp']) {
+                $messages[] = 'The password must contain at least 12 characters, including two uppercase letters, two lowercase letters, two numbers, and two special characters.';
+            }
+            if(!$flags['pass_match']) {
+                $messages[] = 'The passwords do not match.';
+            }
+            echo view('public/reset_password_view', array(
+                'token' => $param['token'],
+                'user' => $this->user_mod->get_user_by_password_reset_token($param['token']),
+                'msg' => '<div class="alert alert-danger">' . implode('<br>', $messages) . '</div>',
+            ));
+        }
+        echo view('template/footer');
+    }
 
         /**
     * Inspired by: https://www.w3resource.com/php-exercises/php-basic-exercise-5.php

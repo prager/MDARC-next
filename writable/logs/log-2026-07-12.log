@@ -1,0 +1,50 @@
+ERROR - 2026-07-12 23:11:47 --> Error connecting to the database: ErrorException: mysqli::real_connect(): php_network_getaddresses: getaddrinfo for db5004986585.hosting-data.io failed: Name or service not known in /home/honza/github/MDARC-Next/system/Database/MySQLi/Connection.php:202
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler()
+#1 /home/honza/github/MDARC-Next/system/Database/MySQLi/Connection.php(202): mysqli->real_connect()
+#2 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect()
+#3 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
+#4 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(1525): CodeIgniter\Database\BaseConnection->query()
+#5 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(1545): CodeIgniter\Database\BaseConnection->listTables()
+#6 /home/honza/github/MDARC-Next/system/Database/MigrationRunner.php(768): CodeIgniter\Database\BaseConnection->tableExists()
+#7 /home/honza/github/MDARC-Next/system/Database/MigrationRunner.php(162): CodeIgniter\Database\MigrationRunner->ensureTable()
+#8 /home/honza/github/MDARC-Next/system/Commands/Database/Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest()
+#9 /home/honza/github/MDARC-Next/system/CLI/Commands.php(74): CodeIgniter\Commands\Database\Migrate->run()
+#10 /home/honza/github/MDARC-Next/system/CLI/Console.php(47): CodeIgniter\CLI\Commands->run()
+#11 /home/honza/github/MDARC-Next/system/Boot.php(388): CodeIgniter\CLI\Console->run()
+#12 /home/honza/github/MDARC-Next/system/Boot.php(133): CodeIgniter\Boot::runCommand()
+#13 /home/honza/github/MDARC-Next/spark(87): CodeIgniter\Boot::bootSpark()
+#14 {main}
+
+Next mysqli_sql_exception: php_network_getaddresses: getaddrinfo for db5004986585.hosting-data.io failed: Name or service not known in /home/honza/github/MDARC-Next/system/Database/MySQLi/Connection.php:202
+Stack trace:
+#0 /home/honza/github/MDARC-Next/system/Database/MySQLi/Connection.php(202): mysqli->real_connect()
+#1 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect()
+#2 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
+#3 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(1525): CodeIgniter\Database\BaseConnection->query()
+#4 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(1545): CodeIgniter\Database\BaseConnection->listTables()
+#5 /home/honza/github/MDARC-Next/system/Database/MigrationRunner.php(768): CodeIgniter\Database\BaseConnection->tableExists()
+#6 /home/honza/github/MDARC-Next/system/Database/MigrationRunner.php(162): CodeIgniter\Database\MigrationRunner->ensureTable()
+#7 /home/honza/github/MDARC-Next/system/Commands/Database/Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest()
+#8 /home/honza/github/MDARC-Next/system/CLI/Commands.php(74): CodeIgniter\Commands\Database\Migrate->run()
+#9 /home/honza/github/MDARC-Next/system/CLI/Console.php(47): CodeIgniter\CLI\Commands->run()
+#10 /home/honza/github/MDARC-Next/system/Boot.php(388): CodeIgniter\CLI\Console->run()
+#11 /home/honza/github/MDARC-Next/system/Boot.php(133): CodeIgniter\Boot::runCommand()
+#12 /home/honza/github/MDARC-Next/spark(87): CodeIgniter\Boot::bootSpark()
+#13 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: php_network_getaddresses: getaddrinfo for db5004986585.hosting-data.io failed: Name or service not known in /home/honza/github/MDARC-Next/system/Database/MySQLi/Connection.php:246
+Stack trace:
+#0 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect()
+#1 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
+#2 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(1525): CodeIgniter\Database\BaseConnection->query()
+#3 /home/honza/github/MDARC-Next/system/Database/BaseConnection.php(1545): CodeIgniter\Database\BaseConnection->listTables()
+#4 /home/honza/github/MDARC-Next/system/Database/MigrationRunner.php(768): CodeIgniter\Database\BaseConnection->tableExists()
+#5 /home/honza/github/MDARC-Next/system/Database/MigrationRunner.php(162): CodeIgniter\Database\MigrationRunner->ensureTable()
+#6 /home/honza/github/MDARC-Next/system/Commands/Database/Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest()
+#7 /home/honza/github/MDARC-Next/system/CLI/Commands.php(74): CodeIgniter\Commands\Database\Migrate->run()
+#8 /home/honza/github/MDARC-Next/system/CLI/Console.php(47): CodeIgniter\CLI\Commands->run()
+#9 /home/honza/github/MDARC-Next/system/Boot.php(388): CodeIgniter\CLI\Console->run()
+#10 /home/honza/github/MDARC-Next/system/Boot.php(133): CodeIgniter\Boot::runCommand()
+#11 /home/honza/github/MDARC-Next/spark(87): CodeIgniter\Boot::bootSpark()
+#12 {main}

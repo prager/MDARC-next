@@ -1,4 +1,5 @@
 <section class="bg-light text-dark text-center text-sm-start">
+  <!-- Updated 1 -->
     <div class="container">
       <?php if(strlen($msg) > 0) {?>
       <div class="row">
@@ -25,7 +26,7 @@
             </div>
             <div class="col-lg-10 mb-3">
               <button type="submit" class="btn btn-primary"> Member Login </button>
-              <p><small>Lost username and/or password? Click <a href="#" data-bs-toggle="modal" class="text-decoration-none" data-bs-target="#reset">here</a>
+              <p><small>Lost username and/or password? Click <a href="#" data-bs-toggle="modal" class="text-decoration-none" data-bs-target="#resetModal">here</a></small></p>
             </div>
           </form>
       </div>
@@ -35,6 +36,29 @@
     </div>
   </div>
 </section>
+
+<div class="modal fade" id="resetModal" tabindex="-1" aria-labelledby="resetModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="<?= site_url('request-password-reset') ?>" method="post">
+        <?= csrf_field() ?>
+        <div class="modal-header">
+          <h5 class="modal-title" id="resetModalLabel">Recover Username or Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Enter the email address associated with your MDARC Member Portal account.</p>
+          <label class="form-label" for="resetEmail">Email</label>
+          <input class="form-control" id="resetEmail" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Send Recovery Email</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <!--Signup for user access-->
 <section class="bg-primary text-light p-5">

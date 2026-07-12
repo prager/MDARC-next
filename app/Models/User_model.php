@@ -1,6 +1,6 @@
 <?php namespace App\Models;
 
-/* edited 1x*/
+/* edited 4x*/
 
 use App\Libraries\MailService;
 use CodeIgniter\Model;
@@ -80,6 +80,206 @@ class User_model extends Model {
         return $retarr;
       }
 
+      public function get_user_by_registration_token(string $token): ?array {
+        if(!preg_match('/^[a-f0-9]{24}$/', $token)) {
+          return NULL;
+        }
+
+        $db = \Config\Database::connect();
+        $user = $db->table('users')
+          ->select('id_user, fname, lname, email')
+          ->where('email_key', $token)
+          ->get()
+          ->getRowArray();
+        $db->close();
+
+        return $user ?: NULL;
+      }
+
+      public function complete_registration(array $param): array {
+        $retarr = array(
+          'flag' => TRUE,
+          'username' => TRUE,
+          'pass_comp' => TRUE,
+          'pass_match' => TRUE,
+          'token' => TRUE,
+        );
+
+        $user = $this->get_user_by_registration_token($param['token'] ?? '');
+        if($user === NULL) {
+          $retarr['flag'] = FALSE;
+          $retarr['token'] = FALSE;
+          return $retarr;
+        }
+
+        $username = strtolower(trim($param['username'] ?? ''));
+        if($username === '') {
+          $retarr['flag'] = FALSE;
+          $retarr['username'] = FALSE;
+        }
+
+        $passFlags = $this->check_pass($param);
+        $retarr['pass_comp'] = $passFlags['pass_comp'];
+        $retarr['pass_match'] = $passFlags['pass_match'];
+        if(!$passFlags['flag']) {
+          $retarr['flag'] = FALSE;
+        }
+
+        $db = \Config\Database::connect();
+        $builder = $db->table('users');
+        $builder->where('username', $username);
+        $builder->where('id_user !=', $user['id_user']);
+        if($builder->countAllResults() > 0) {
+          $retarr['flag'] = FALSE;
+          $retarr['username'] = FALSE;
+        }
+
+        if($retarr['flag']) {
+          $updated = $db->table('users')
+            ->where('id_user', $user['id_user'])
+            ->where('email_key', $param['token'])
+            ->update(array(
+              'username' => $username,
+              'pass' => password_hash($param['pass'], PASSWORD_BCRYPT, array('cost' => 12)),
+              'active' => 1,
+              'email_key' => NULL,
+            ));
+
+          if(!$updated || $db->affectedRows() !== 1) {
+            $retarr['flag'] = FALSE;
+            $retarr['token'] = FALSE;
+          }
+        }
+
+        $db->close();
+        return $retarr;
+      }
+
+      public function request_password_reset(string $email): array {
+        $result = array('success' => TRUE);
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+          return $result;
+        }
+
+        $db = \Config\Database::connect();
+        $user = $db->table('users')
+          ->select('id_user, fname, username, email')
+          ->where('email', strtolower(trim($email)))
+          ->get()
+          ->getRowArray();
+
+        // Return the same result for unknown addresses to prevent account discovery.
+        if(!$user) {
+          $db->close();
+          return $result;
+        }
+
+        $token = bin2hex(openssl_random_pseudo_bytes(12));
+        $expiresAt = date('Y-m-d H:i:s', time() + (20 * 60));
+        $saved = $db->table('users')
+          ->where('id_user', $user['id_user'])
+          ->update(array(
+            'password_reset_token' => $token,
+            'password_reset_expires_at' => $expiresAt,
+          ));
+
+        if(!$saved) {
+          $db->close();
+          return array('success' => FALSE);
+        }
+
+        $escape = static fn($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+        $firstName = $escape($user['fname']);
+        $username = $escape($user['username']);
+        $resetUrl = $escape(site_url('reset-password/' . $token));
+        $mailarr = array(
+          'recipient' => $user['email'],
+          'subject' => 'MDARC Member Portal Account Recovery',
+          'message' => <<<HTML
+            <div style="font-family: Arial, sans-serif; color: #222; line-height: 1.6; max-width: 640px; margin: 0 auto;">
+              <h2 style="color: #174f78;">MDARC Account Recovery</h2>
+              <p>Hello {$firstName},</p>
+              <p>Your MDARC Member Portal username is <strong>{$username}</strong>.</p>
+              <p>Select the button below to choose a new password.</p>
+              <p style="margin: 28px 0;"><a href="{$resetUrl}" style="background-color: #174f78; border-radius: 4px; color: #fff; display: inline-block; font-weight: bold; padding: 12px 20px; text-decoration: none;">Reset Password</a></p>
+              <p><strong>This recovery link expires in 20 minutes.</strong> If you did not request it, you can safely ignore this email.</p>
+              <p style="font-size: 14px; color: #555;">If the button does not work, copy and paste this address into your browser:<br><a href="{$resetUrl}" style="color: #174f78; word-break: break-all;">{$resetUrl}</a></p>
+            </div>
+            HTML,
+        );
+
+        $mailResult = $this->send_email($mailarr);
+        if(!($mailResult['success'] ?? FALSE)) {
+          $db->table('users')->where('id_user', $user['id_user'])->update(array(
+            'password_reset_token' => NULL,
+            'password_reset_expires_at' => NULL,
+          ));
+          $result['success'] = FALSE;
+        }
+
+        $db->close();
+        return $result;
+      }
+
+      public function get_user_by_password_reset_token(string $token): ?array {
+        if(!preg_match('/^[a-f0-9]{24}$/', $token)) {
+          return NULL;
+        }
+
+        $db = \Config\Database::connect();
+        $user = $db->table('users')
+          ->select('id_user, fname, lname, username, email')
+          ->where('password_reset_token', $token)
+          ->where('password_reset_expires_at >=', date('Y-m-d H:i:s'))
+          ->get()
+          ->getRowArray();
+        $db->close();
+
+        return $user ?: NULL;
+      }
+
+      public function complete_password_reset(array $param): array {
+        $result = array(
+          'flag' => TRUE,
+          'token' => TRUE,
+          'pass_comp' => TRUE,
+          'pass_match' => TRUE,
+        );
+        $token = $param['token'] ?? '';
+        $user = $this->get_user_by_password_reset_token($token);
+        if($user === NULL) {
+          $result['flag'] = FALSE;
+          $result['token'] = FALSE;
+          return $result;
+        }
+
+        $passFlags = $this->check_pass($param);
+        $result['pass_comp'] = $passFlags['pass_comp'];
+        $result['pass_match'] = $passFlags['pass_match'];
+        if(!$passFlags['flag']) {
+          $result['flag'] = FALSE;
+          return $result;
+        }
+
+        $db = \Config\Database::connect();
+        $updated = $db->table('users')
+          ->where('id_user', $user['id_user'])
+          ->where('password_reset_token', $token)
+          ->where('password_reset_expires_at >=', date('Y-m-d H:i:s'))
+          ->update(array(
+            'pass' => password_hash($param['pass'], PASSWORD_BCRYPT, array('cost' => 12)),
+            'password_reset_token' => NULL,
+            'password_reset_expires_at' => NULL,
+          ));
+
+        if(!$updated || $db->affectedRows() !== 1) {
+          $result['flag'] = FALSE;
+          $result['token'] = FALSE;
+        }
+        $db->close();
+        return $result;
+      }
+
       public function register($param) {
         //echo '<br><br><br><br> email: ' . $param['email'];
         $retarr = array();
@@ -103,7 +303,7 @@ class User_model extends Model {
     
         if(($cnt_email == 0) && ($cnt_name == 0) && $retarr['flag']) {
           $rand_str = bin2hex(openssl_random_pseudo_bytes(12));
-          $param['verifystr'] = base_url() . '/index.php/set-pass/' . $rand_str;
+          $param['verifystr'] = site_url('set-pass/' . $rand_str);
           $param['email_key'] = $rand_str;
     
     // as default the user type will always be the MDARC Member
@@ -114,18 +314,46 @@ class User_model extends Model {
 
           $mailarr['recipient'] = 'jkulisek.us@gmail.com';
           $mailarr['subject'] = 'MDARC New User Registration';
-          $mailarr['message'] = $param['fname'] . ' ' . $param['lname'] . "<br><br>".
-                $param['street'] . "\n\n" .$param['city'] . ' ' . $param['state_cd'] . $param['zip_cd'] . "<br><br>".
-                ' Phone: ' . $param['phone'] . ' | Email: ' . $param['email'] . "<br><br>" . $param['verifystr'];
+          $escape = static fn($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+          $memberName = $escape(trim($param['fname'] . ' ' . $param['lname']));
+          $street = $escape($param['street']);
+          $cityStateZip = $escape(trim($param['city'] . ' ' . $param['state_cd'] . ' ' . $param['zip_cd']));
+          $phone = $escape($param['phone']);
+          $email = $escape($param['email']);
+          $verificationUrl = $escape($param['verifystr']);
+
+          $mailarr['message'] = <<<HTML
+            <div style="font-family: Arial, sans-serif; color: #222; line-height: 1.5; max-width: 640px; margin: 0 auto;">
+              <h2 style="color: #174f78; margin-bottom: 8px;">New Member Portal Registration</h2>
+              <p style="margin-top: 0;">A new user has registered for the MDARC Member Portal.</p>
+              <table role="presentation" style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                <tr><th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd; width: 120px;">Name</th><td style="padding: 8px; border-bottom: 1px solid #ddd;">{$memberName}</td></tr>
+                <tr><th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Address</th><td style="padding: 8px; border-bottom: 1px solid #ddd;">{$street}<br>{$cityStateZip}</td></tr>
+                <tr><th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Phone</th><td style="padding: 8px; border-bottom: 1px solid #ddd;">{$phone}</td></tr>
+                <tr><th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Email</th><td style="padding: 8px; border-bottom: 1px solid #ddd;"><a href="mailto:{$email}" style="color: #174f78;">{$email}</a></td></tr>
+              </table>
+              <p><a href="{$verificationUrl}" style="color: #174f78;">Open the member verification link</a></p>
+            </div>
+            HTML;
     
           $adminMail = $this->send_email($mailarr);
 
           $memailarr['recipient'] = $param['email'];
           $memailarr['subject'] = 'MDARC Member Portal User Registration';
-    
-          $memailarr['message'] = 'To finish your registration for MDARC Membership Portal click on the following link or copy paste in the browser: ' . $param['verifystr'] . "\n\n";
-          $memailarr['message'] .= 'You must do so within 72 hours otherwise you login information may be deactivated.
-                      Thank you for your interest in Mount Diablo Amateur Radio Club!';
+
+          $memailarr['message'] = <<<HTML
+            <div style="font-family: Arial, sans-serif; color: #222; line-height: 1.6; max-width: 640px; margin: 0 auto;">
+              <h2 style="color: #174f78;">Welcome to the MDARC Member Portal</h2>
+              <p>Hello {$memberName},</p>
+              <p>To finish your registration, select the button below to set your password.</p>
+              <p style="margin: 28px 0;">
+                <a href="{$verificationUrl}" style="background-color: #174f78; border-radius: 4px; color: #fff; display: inline-block; font-weight: bold; padding: 12px 20px; text-decoration: none;">Finish Registration</a>
+              </p>
+              <p>This link must be used within 72 hours. After that, your login information may be deactivated.</p>
+              <p style="font-size: 14px; color: #555;">If the button does not work, copy and paste this address into your browser:<br><a href="{$verificationUrl}" style="color: #174f78; word-break: break-all;">{$verificationUrl}</a></p>
+              <p>Thank you for your interest in the Mount Diablo Amateur Radio Club!</p>
+            </div>
+            HTML;
 
           $memberMail = $this->send_email($memailarr);
 
