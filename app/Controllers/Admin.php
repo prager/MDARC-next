@@ -1,5 +1,5 @@
 <?php
-
+// Updated 4
 namespace App\Controllers;
 use App\Controllers\BaseController;
 use CodeIgniter\I18n\Time;
@@ -22,8 +22,57 @@ class Admin extends BaseController
             echo view('status/status_view', $data);
 			echo view('template/footer');
         }
-            
     }
+	public function payment_report() {
+		if($this->check_admin()) {
+			echo view('template/header_admin');
+			echo view('admin/payments_view.php');
+		}
+		else {
+			echo view('template/header');
+			 $data['title'] = 'Login Error';
+			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			 echo view('status/status_view', $data);
+		}
+		echo view('template/footer');
+	}
+	public function proc_payments_report() {
+		if($this->check_admin()) {
+			echo view('template/header_admin');
+			$date_from = $this->request->getPost('date_from');
+			$date_to = $this->request->getPost('date_to');
+			$data = $this->admin_mod->get_payments(array('date_from' => $date_from, 'date_to' => $date_to));
+			$data['msg'] = '';
+			echo view('admin/payments_res_view.php', $data);
+		}
+		else {
+			echo view('template/header');
+			$data['title'] = 'Login Error';
+			$data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+			' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			echo view('status/status_view', $data);
+		}
+		echo view('template/footer');
+	}
+	public function download_pay_rep() {
+		return $this->download_report('paym_rep.csv', 'payments-report.csv');
+	}
+	public function download_transactions() {
+		return $this->download_report('transactions.csv', 'transactions.csv');
+	}
+	private function download_report(string $storedName, string $downloadName) {
+		if(!$this->check_admin()) {
+			return $this->response->setStatusCode(403)->setBody('You are not authorized to download this report.');
+		}
+
+		$path = WRITEPATH . 'exports' . DIRECTORY_SEPARATOR . $storedName;
+		if(!is_file($path)) {
+			return $this->response->setStatusCode(404)->setBody('The report file is unavailable. Generate the report again.');
+		}
+
+		return $this->response->download($path, NULL)->setFileName($downloadName);
+	}
 /**
 * Checks for admin user according to the type code
 */
@@ -52,6 +101,32 @@ class Admin extends BaseController
 			echo view('template/footer');
 		}
 		
+	}
+	public function edit_payment(int $id) {
+		if($this->check_admin()) {
+			echo view('template/header_admin');
+			$param['id_payment'] = $id;
+			$flag = $this->request->getPost('radFlag');
+			$param['flag'] = 0;
+			if($flag == 'notvalid') $param['flag'] = 1;
+			$param['note'] = $this->request->getPost('note');
+			$this->admin_mod->update_payment($param);
+			$timestamp = time();
+			$date_to = strval(date('Y-m-d', $timestamp));
+			$date_from = strval(date('Y-m-d', strtotime("-1 months", strtotime($date_to))));
+			$data = $this->admin_mod->get_payments(array('date_from' => $date_from, 'date_to' => $date_to));
+			$data['msg'] = 'Payment data edited! Thank you...';
+			echo view('admin/payments_res_view.php', $data);
+			echo view('template/footer_master');
+		}
+		else {
+			echo view('template/header');
+			 $data['title'] = 'Login Error';
+			 $data['msg'] = 'There was an error while checking your credentials. Click ' . anchor('Home/reset_password', 'here') .
+				 ' to reset your password or go to home page ' . anchor('Home', 'here'). '<br><br>';
+			 echo view('status/status_view', $data);
+			 echo view('template/footer');
+		}
 	}
 
     public function edit_faq($id = null) {

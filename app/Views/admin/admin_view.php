@@ -1,3 +1,4 @@
+<!-- Updated 1 -->
 <section id="learn" class="py-5">
     <div class="container">
         <div class="row align-items-center justify-content-between mt-5">
@@ -8,6 +9,7 @@
               <h3 class="mb-3">Welcome Admin!</h3>
               <p>Staff page: <a href="<?php echo base_url() . 'index.php/staff'; ?>" class="text-decoration-none">Staff Page</a></p>
               <p>Member page: <a href="<?php echo base_url() . 'index.php/member'; ?>" class="text-decoration-none">Member Page</a></p>
+              <p>Payment Report: <a href="<?php echo site_url('payment-report'); ?>" class="text-decoration-none">Payment Report</a></p>
               <p>Edit Members: <a href="<?php echo site_url('admin-members'); ?>" class="text-decoration-none">MDARC Members</a></p>
               <p>Add MDARC Member: <a href="<?php echo site_url('admin-members') . '?action=add'; ?>" class="text-decoration-none">Add a Member</a></p>
               <p>FAQs: <a href="<?php echo site_url('admin-faqs'); ?>" class="text-decoration-none">FAQs Editing</a></p>

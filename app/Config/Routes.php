@@ -4,7 +4,7 @@ use CodeIgniter\Router\RouteCollection;
 
 /**
  * @var RouteCollection $routes
- * Update 4
+ * Update 7
  */
 //$routes->get('/', 'Home::index');
 $routes->get('/', 'Home::default');
@@ -39,7 +39,13 @@ $routes->post('edit-fam-mem/(:num)', 'Member::edit_fam_mem/$1');
 $routes->post('add-fam-mem/(:num)', 'Member::add_fam_mem/$1');
 $routes->post('do-update', 'Member::do_update');
 
+$routes->post('edit-payment/(:num)', 'Admin::edit_payment/$1');
+
 $routes->get('delete-user/(:num)', 'Master::delete_user/$1');
+$routes->get('payment-report', 'Admin::payment_report');
+$routes->post('proc-payments-report', 'Admin::proc_payments_report');
+$routes->get('admin/download_pay_rep', 'Admin::download_pay_rep');
+$routes->get('admin/download_transactions', 'Admin::download_transactions');
 
 $routes->get('delete-faq/(:num)', 'Master::delete_faq/$1');
 $routes->get('edit-users', 'Master::edit_users');
